@@ -5,27 +5,61 @@
 #include <iostream>
 #include <numeric> // std::reduce
 #include <random>
+#include <chrono>
+#include <vector>
+#include <numeric>
+#include <execution>
 #include "Header.h"
 
-void std_reduce()
+
+
+
+
+enum Items
 {
-    std::array arr{ 1, 2, 3, 4 };
-    std::cout << std::reduce(arr.begin(), arr.end()) << '\n'; // 10
-    // If you can't use std::reduce, use std::accumulate. The 0 is the initial value
-    // of the result: 0 + (((1 + 2) + 3) + 4)
-    std::cout << std::accumulate(arr.begin(), arr.end(), 0) << '\n'; // 10
-    std::mt19937 mt{ static_cast<std::mt19937::result_type>(std::time(nullptr)) };
-    std::shuffle(arr.begin(), arr.end(), mt);
-    for (int i : arr)
-    {
-        std::cout << i << ' ';
-    }
-    std::cout << '\n';
+    potions = 2,
+    torches = 5,
+    arrows = 10
+};
+
+int countTotalItems(const int value)
+{
+    return value;
 }
+
+void question1()
+{
+    //Pretend you’re writing a game where the player can hold 3 types of items: 
+    //health potions, torches, and arrows. 
+    //Create an enum to identify the different types of items, 
+    //and an std::array to store the number of each item the player is carrying 
+    //(The enumerators are used as indexes of the array). 
+    //The player should start with 2 health potions, 5 torches, and 10 arrows.
+    //Write a function called countTotalItems() 
+    //that returns how many items the player has in total. 
+    //Have your main() function print the output of countTotalItems() 
+    //as well as the number of torches.
+
+    std::array <int, 3>carrying{};
+    carrying[0] = Items::potions;
+    carrying[1] = Items::torches;
+    carrying[2] = Items::arrows;
+    
+    const int reduceint = std::reduce(
+        std::execution::par, carrying.cbegin(), carrying.cend());
+    for (size_t i = 0; i < 3; i++)
+    {
+        std::cout << carrying[i] << ' ';
+    }
+    std::cout << std::endl;
+    std::cout << "The player has " << countTotalItems(reduceint) << " total items." << '\n';
+}
+
 
 int main()
 {
-    std_reduce();
+    question1();
+    examplecode();
 
     return 0;
 }
