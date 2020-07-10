@@ -22,5 +22,7 @@ int get_grade();
 bool compareStudents(const Student& a, const Student& b);
 void question2();
 
+void question3(int one, int two);
+
 #endif // !LESSON_7
 
