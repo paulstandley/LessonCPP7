@@ -13,35 +13,76 @@
 #include "Header.h"
 
 
-void question4(const char* stringy2)
+void question5()
 {
-    //Write a function to print a C-style string character by character. 
-    //Use a pointer to step through each character of the string 
-    //and print that character. Stop when you hit the null terminator. 
-    //Write a main function that tests the function with the 
-    //string literal “Hello, world!”.
-    char stringy1[]{ "Hello, world!" };
-    const int length{ static_cast<int>(std::size(stringy1)) };
-    //const int length{ sizeof(myString) / sizeof(myString[0]) }; 
-    //use instead if not C++17 capable
-    for (int i = 0; i < length; i++)
-    {
-        std::cout << stringy1[i] << ' ';
+    //What’s wrong with each of these snippets, and how would you fix it?
+    {// (a) returns a value thats out of range undefiend behaver so change <= to =
+        int array[]{ 0, 1, 2, 3 };// count = std::size(array)
+        for (std::size_t count{ 0 }; count <= std::size(array); ++count)
+        {
+             std::cout << array[count] << ' ';
+        }
+        std::cout << '\n';
     }
-    std::cout << std::endl;
-    
-    //const char length1{ static_cast<int>(*stringy2) };
-    while (*stringy2 != '\0')
-    {
-        std::cout << *stringy2;// print the current character
-        ++stringy2;// and point stringy2 at the next character
+    {// (b) asingning a int to a pointer fix this by making ptr non-const
+        int x{ 5 };
+        int y{ 7 };
+        const int *ptr{ &x };
+        std::cout << *ptr << '\n';
+        //*ptr = 6;
+        std::cout << *ptr << '\n';
+        ptr = &y;
+        std::cout << *ptr << '\n';
     }
-    std::cout << std::endl;
+/*//   (c) array dose not remember 
+//     it length it decays to a pointer you 
+//     need to pass it into to function as a second pramaiter
+void printArray(int array[])
+{
+  for (int element : array)
+  {
+    std::cout << element << ' ';
+  }
 }
+ 
+int main()
+{
+  int array[]{ 9, 7, 5, 3, 1 };
+ 
+  printArray(array);
+ 
+  std::cout << '\n';
+ 
+  return 0;
+}
+
+//   (d) 
+    int *allocateArray(const int length)
+    {
+        int temp[length]{};
+        return temp;
+    }
+    temp is a fixed array, but length is not a compile-time constant,
+    so we can’t use length to create a C-style array. 
+    Variable temp will also go out of scope at the end of the function, 
+    the return value will be pointing to something invalid.
+    temp should use dynamic memory allocation or be a std::vector
+
+    {// (e) You can’t make an int pointer point at a non-int variable.
+        //ptr should be of type double*
+        double d{ 5.5 };
+        int* ptr{ &d };
+        std::cout << ptr << '\n';
+    }
+*/
+
+
+}
+
 
 int main()
 {
-    question4("Hello world!");
+    question5();
 
     return 0;
 }

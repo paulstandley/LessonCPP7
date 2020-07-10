@@ -23,6 +23,8 @@ bool compareStudents(const Student& a, const Student& b);
 void question2();
 
 void question3(int one, int two);
+void question4(const char* stringy2);
+
 
 #endif // !LESSON_7
 
