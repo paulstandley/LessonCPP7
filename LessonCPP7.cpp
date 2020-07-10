@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <algorithm> // std::shuffle
+#include <algorithm> // std::shuffle sort
 #include <array>
 #include <ctime>
 #include <iostream>
@@ -12,54 +12,82 @@
 #include "Header.h"
 
 
-
-
-
-enum Items
+struct  Student
 {
-    potions = 2,
-    torches = 5,
-    arrows = 10
+    std::string first_name{};
+    int grade{};
 };
 
-int countTotalItems(const int value)
+std::string get_name()
 {
-    return value;
+    std::string name{};
+    std::cout << "Please enter first name ";
+    std::cin >> name;
+    return name;
 }
 
-void question1()
+int get_grade()
 {
-    //Pretend you’re writing a game where the player can hold 3 types of items: 
-    //health potions, torches, and arrows. 
-    //Create an enum to identify the different types of items, 
-    //and an std::array to store the number of each item the player is carrying 
-    //(The enumerators are used as indexes of the array). 
-    //The player should start with 2 health potions, 5 torches, and 10 arrows.
-    //Write a function called countTotalItems() 
-    //that returns how many items the player has in total. 
-    //Have your main() function print the output of countTotalItems() 
-    //as well as the number of torches.
+    int grade{};
+    std::cout << "Please enter grade ";
+    std::cin >> grade;
+    return grade;
+}
 
-    std::array <int, 3>carrying{};
-    carrying[0] = Items::potions;
-    carrying[1] = Items::torches;
-    carrying[2] = Items::arrows;
-    
-    const int reduceint = std::reduce(
-        std::execution::par, carrying.cbegin(), carrying.cend());
-    for (size_t i = 0; i < 3; i++)
+bool compareStudents(const Student& a, const Student& b)
+{
+    // Pass by reference to avoid slow copies.
+    return (a.grade > b.grade);
+}
+
+void question2()
+{
+    //Write the following program : 
+    //Create a struct that holds a student’s first nameand grade(on a scale of 0 - 100).
+    //Ask the user how many students they want to enter.
+    //Create a std::vector to hold all of the students.
+    //Then prompt the user for each nameand grade.
+    //Once the user has entered all the namesand grade pairs,
+    //sort the list by grade(highest first).
+    //Then print all the namesand grades in sorted order.
+    //The output should look like this
+    //Alex got a grade of 94
+    //Mark got a grade of 88
+    //Joe got a grade of 82
+    //Terry got a grade of 73
+    //Ralph got a grade of 4
+
+    std::vector <Student> vector_array;
+    std::cout << "Roll call" << '\n';
+    bool stop{ false };
+    char y{ 'n' };
+    Student stundent;
+
+    while (true)
     {
-        std::cout << carrying[i] << ' ';
+        stundent.first_name = get_name();
+        stundent.grade = get_grade();
+        vector_array.push_back(stundent);
+        std::cout << "Are you ready to stop y";
+        std::cin >> y;
+        if (static_cast<int>(y) == 121)
+        {
+            std::cout << "True \n";
+            break;
+        }
     }
-    std::cout << std::endl;
-    std::cout << "The player has " << countTotalItems(reduceint) << " total items." << '\n';
+    
+    std::sort(vector_array.begin(), vector_array.end(), compareStudents);
+    for (auto inc = vector_array.begin(); inc != vector_array.end(); ++inc)
+    {
+        std::cout << (*inc).first_name << " got a grade of " << inc->grade << '\n';
+    }
 }
 
 
 int main()
 {
-    question1();
-    examplecode();
+    question2();
 
     return 0;
 }

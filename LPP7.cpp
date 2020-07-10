@@ -51,3 +51,34 @@ void examplecode()
     }
 }
 
+int countTotalItems(const int value)
+{
+    return value;
+}
+
+void question1()
+{
+    //Pretend you’re writing a game where the player can hold 3 types of items: 
+    //health potions, torches, and arrows. 
+    //Create an enum to identify the different types of items, 
+    //and an std::array to store the number of each item the player is carrying 
+    //(The enumerators are used as indexes of the array). 
+    //The player should start with 2 health potions, 5 torches, and 10 arrows.
+    //Write a function called countTotalItems() 
+    //that returns how many items the player has in total. 
+    //Have your main() function print the output of countTotalItems() 
+    //as well as the number of torches.
+
+    std::array <int, 3>carrying{};
+    carrying[0] = Items::potions;
+    carrying[1] = Items::torches;
+    carrying[2] = Items::arrows;
+
+    const int reduceint = std::reduce(
+        std::execution::par, carrying.cbegin(), carrying.cend());
+
+    std::cout << "The player has " << countTotalItems(reduceint) << " total items." << '\n';
+    std::cout << "The player has " << Items::torches << " torches." << '\n';
+}
+
+
