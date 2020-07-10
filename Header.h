@@ -12,6 +12,15 @@ int countTotalItems(const int value);
 
 void examplecode();
 
+struct  Student
+{
+    std::string first_name{};
+    int grade{};
+};
+std::string get_name();
+int get_grade();
+bool compareStudents(const Student& a, const Student& b);
+void question2();
 
 #endif // !LESSON_7
 
