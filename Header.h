@@ -25,6 +25,7 @@ void question2();
 void question3(int one, int two);
 void question4(const char* stringy2);
 
+void question5();
 
 #endif // !LESSON_7
 

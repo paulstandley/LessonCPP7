@@ -12,77 +12,115 @@
 #include <iterator> // for std::size
 #include "Header.h"
 
+enum class CardSuit
+{
+    SUIT_SPADE,
+    SUIT_CLUB,
+    SUIT_DIAMOND,
+    SUIT_HEART,
+    MAX_SUITS
+};
 
-void question5()
+enum class CardRank
 {
-    //What’s wrong with each of these snippets, and how would you fix it?
-    {// (a) returns a value thats out of range undefiend behaver so change <= to =
-        int array[]{ 0, 1, 2, 3 };// count = std::size(array)
-        for (std::size_t count{ 0 }; count <= std::size(array); ++count)
-        {
-             std::cout << array[count] << ' ';
-        }
-        std::cout << '\n';
-    }
-    {// (b) asingning a int to a pointer fix this by making ptr non-const
-        int x{ 5 };
-        int y{ 7 };
-        const int *ptr{ &x };
-        std::cout << *ptr << '\n';
-        //*ptr = 6;
-        std::cout << *ptr << '\n';
-        ptr = &y;
-        std::cout << *ptr << '\n';
-    }
-/*//   (c) array dose not remember 
-//     it length it decays to a pointer you 
-//     need to pass it into to function as a second pramaiter
-void printArray(int array[])
-{
-  for (int element : array)
-  {
-    std::cout << element << ' ';
-  }
-}
- 
-int main()
-{
-  int array[]{ 9, 7, 5, 3, 1 };
- 
-  printArray(array);
- 
-  std::cout << '\n';
- 
-  return 0;
-}
+    RANK_2,
+    RANK_3,
+    RANK_4,
+    RANK_5,
+    RANK_6,
+    RANK_7,
+    RANK_8,
+    RANK_9,
+    RANK_10,
+    RANK_JACK,
+    RANK_QUEEN,
+    RANK_KING,
+    RANK_ACE,
+    MAX_RANKS
+};
 
-//   (d) 
-    int *allocateArray(const int length)
+struct Card
+{
+    CardRank rank{};
+    CardSuit suit{};
+};
+
+void printCard(const Card &card)
+{
+    // Card struct with CardRank and CardSuit enums
+    switch (card.rank)
     {
-        int temp[length]{};
-        return temp;
+    case CardRank::RANK_2:
+        std::cout << '2';
+    case CardRank::RANK_3:
+        std::cout << '3';
+    case CardRank::RANK_4:
+        std::cout << '4';
+    case CardRank::RANK_5:
+        std::cout << '5';
+    case CardRank::RANK_6:
+        std::cout << '6';
+    case CardRank::RANK_7:
+        std::cout << '7';
+    case CardRank::RANK_8:
+        std::cout << '8';
+    case CardRank::RANK_9:
+        std::cout << '9';
+    case CardRank::RANK_10:
+        std::cout << '10';
+    case CardRank::RANK_JACK:
+        std::cout << 'J';
+    case CardRank::RANK_QUEEN:
+        std::cout << 'Q';
+    case CardRank::RANK_KING:
+        std::cout << 'K';
+    case CardRank::RANK_ACE:
+        std::cout << 'A';
+
+    default:
+        std::cout << '?';
+        break;
     }
-    temp is a fixed array, but length is not a compile-time constant,
-    so we can’t use length to create a C-style array. 
-    Variable temp will also go out of scope at the end of the function, 
-    the return value will be pointing to something invalid.
-    temp should use dynamic memory allocation or be a std::vector
 
-    {// (e) You can’t make an int pointer point at a non-int variable.
-        //ptr should be of type double*
-        double d{ 5.5 };
-        int* ptr{ &d };
-        std::cout << ptr << '\n';
+    switch (card.suit)
+    {
+    case CardSuit::SUIT_CLUB:
+        std::cout << 'C';
+    case CardSuit::SUIT_SPADE:
+        std::cout << 'S';
+    case CardSuit::SUIT_HEART:
+        std::cout << 'H';
+    case CardSuit::SUIT_DIAMOND:
+        std::cout << 'D';
+
+    default:
+        std::cout << '?';
+        break;
     }
-*/
 
+}
 
+void question6()
+{
+    // Let’s pretend we’re writing a card game.
+
+    // (a) A deck of cards has 52 unique cards(13 card ranks of 4 suits).
+    //Create enumerations for the card ranks(2, 3, 4, 5, 6, 7, 8, 9, 10, 
+    //Jack, Queen, King, Ace)and suits(clubs, diamonds, hearts, spades).
+    //Those enumerators will not be used to index arrays.
+
+    //b) Each card will be represented by a struct named Card that contains a rank and a suit. 
+    //Create the struct.
+
+    //c) Create a printCard() function that takes a const Card reference as a parameter 
+    //and prints the card rank and suit as a 2-letter code 
+    //(e.g. the jack of spades would print as JS).
 }
 
 
 int main()
 {
-    question5();
+    
 
     return 0;
 }
