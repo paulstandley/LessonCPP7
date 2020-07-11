@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <algorithm> // std::shuffle sort
 #include <array>
-#include <ctime>
+#include <ctime> //  std::time
 #include <iostream>
 #include <numeric> // std::reduce
 #include <random>
@@ -112,35 +112,89 @@ deck_type createDeck()
     auto suits{ static_cast<int>(CardSuit::MAX_SUITS) };
     auto ranks{ static_cast<int>(CardRank::MAX_RANKS) };
 
-    for (int suit{ 0 }; suit < suits; ++suit)
+    for (int suit{ 0 }; suit < suits - 1; ++suit)
     {
-        for (int rank{ 0 }; rank < ranks; ++rank)
+        for (int rank{ 0 }; rank < ranks - 1; ++rank)
         {
             deck[card].suit = static_cast<CardSuit>(suit);
             deck[card].rank = static_cast<CardRank>(rank);
+            ++card;
         }
     }
-
     return deck;
+}
+
+void printDeck(const deck_type& deck)
+{
+    for (const auto& card : deck)
+    {
+        printCard(card);
+        std::cout << ' ';
+    }
+    std::cout << '\n';
+}
+
+void shuffleDeck(deck_type& deck)
+{
+    // mt is static so it only gets seeded once.
+    static std::mt19937 mt{ static_cast<std::mt19937::result_type>(std::time(nullptr)) };
+
+    std::shuffle(deck.begin(), deck.end(), mt);
+}
+
+int getCardValue(const Card& card)
+{
+    // Handle rank 2 to 10.
+    if (card.rank <= CardRank::RANK_10)
+    {
+        return (static_cast<int>(card.rank) + 2);
+    }
+    // Then switch
+    switch (card.rank)
+    {
+    case CardRank::RANK_JACK:
+    case CardRank::RANK_QUEEN:
+    case CardRank::RANK_KING:
+        return 10;
+    case CardRank::RANK_ACE:
+        return 11;
+    default:
+        // we have a bug in our code.
+        return 0;
+    }
 }
 
 void question6()
 {
     // Let’s pretend we’re writing a card game.
 
-    // (a) A deck of cards has 52 unique cards(13 card ranks of 4 suits).
+    //(a) A deck of cards has 52 unique cards(13 card ranks of 4 suits).
     //Create enumerations for the card ranks(2, 3, 4, 5, 6, 7, 8, 9, 10, 
     //Jack, Queen, King, Ace)and suits(clubs, diamonds, hearts, spades).
     //Those enumerators will not be used to index arrays.
 
-    //b) Each card will be represented by a struct named Card that contains a rank and a suit. 
+    //(b) Each card will be represented by a struct named Card that contains a rank and a suit. 
     //Create the struct.
 
-    //c) Create a printCard() function that takes a const Card reference as a parameter 
+    //(c) Create a printCard() function that takes a const Card reference as a parameter 
     //and prints the card rank and suit as a 2-letter code 
     //(e.g. the jack of spades would print as JS).
 
+    //d) A deck of cards has 52 cards. Create an array (using std::array) 
+    //to represent the deck of cards, and initialize it with one of each card.
+    //Do this in a function named createDeck and call createDeck from main. 
+    //createDeck should return the deck to main.
+
+    //e) Write a function named printDeck() that takes the deck as a const reference 
+    //parameter and prints the cards in the deck. Use a range-based for-loop. 
+    //When you can printDeck with the deck you generated in the previous task
+
+    //f) Write a function named shuffleDeck to shuffle the deck of cards using std::shuffle.
+    //Update your main function to shuffle the deck and print out the shuffled deck.
+
     auto deck{ createDeck() };
+    shuffleDeck(deck);
+    printDeck(deck);
 }
 
 
