@@ -12,6 +12,7 @@
 #include <iterator> // for std::size
 #include "Header.h"
 
+
 enum class CardSuit
 {
     SUIT_SPADE,
@@ -97,7 +98,30 @@ void printCard(const Card &card)
         std::cout << '?';
         break;
     }
+}
 
+// aliases
+using deck_type = std::array<Card, 52>;
+using index_type = deck_type::size_type;
+
+deck_type createDeck()
+{
+    deck_type deck{};
+    index_type card{ 0 };
+
+    auto suits{ static_cast<int>(CardSuit::MAX_SUITS) };
+    auto ranks{ static_cast<int>(CardRank::MAX_RANKS) };
+
+    for (int suit{ 0 }; suit < suits; ++suit)
+    {
+        for (int rank{ 0 }; rank < ranks; ++rank)
+        {
+            deck[card].suit = static_cast<CardSuit>(suit);
+            deck[card].rank = static_cast<CardRank>(rank);
+        }
+    }
+
+    return deck;
 }
 
 void question6()
@@ -115,12 +139,14 @@ void question6()
     //c) Create a printCard() function that takes a const Card reference as a parameter 
     //and prints the card rank and suit as a 2-letter code 
     //(e.g. the jack of spades would print as JS).
+
+    auto deck{ createDeck() };
 }
 
 
 int main()
 {
-    
+    question6();
 
     return 0;
 }
