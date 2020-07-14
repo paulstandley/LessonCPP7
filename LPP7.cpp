@@ -10,6 +10,7 @@
 #include <numeric>
 #include <execution>
 #include <iterator> // for std::size
+#include <cmath>    // for std::sin() and std::cos()
 #include "Header.h"
 
 
@@ -252,4 +253,195 @@ void question5()
         }
     */
 }
+
+void pass_by_value(int y)
+{
+    std::cout << "y = " << y << '\n';
+    y = 6;
+    std::cout << "y = " << y << '\n';
+    /*
+    Pros and cons of pass by value
+
+Advantages of passing by value:
+
+Arguments passed by value can be variables (e.g. x), literals (e.g. 6),
+expressions (e.g. x+1), structs & classes, and enumerators.
+In other words, just about anything.
+Arguments are never changed by the function being called, which prevents side effects.
+
+Disadvantages of passing by value:
+
+Copying structs and classes can incur a significant performance penalty,
+especially if the function is called many times.
+When to use pass by value:
+
+When passing fundamental data type and enumerators,
+and the function does not need to change the argument.
+
+When not to use pass by value:
+
+When passing structs or classes (including std::array, std::vector, and std::string).
+In most cases, pass by value is the best way to accept parameters of fundamental
+types when the function does not need to change the argument.
+Pass by value is flexible and safe, and in the case of fundamental types, efficient.
+    */
+}
+
+void callL7Func()
+{
+    //Function parameters passed by value can also be made const. 
+    //This will enlist the compiler’s help in ensuring the function 
+    //doesn’t try to change the parameter’s value.
+    int x = 5;
+    std::cout << "x = " << x << '\n';
+    pass_by_value(x);
+    std::cout << "x = " << x << '\n';
+}
+
+void print_elements(int(&arr)[4])
+{// Note: You need to specify the array size in the function declaration
+    int length{ sizeof(arr) / sizeof(arr[0]) };
+    // we can now do this since the array won't decay
+    for (int i{ 0 }; i < length; ++i)
+    {
+        std::cout << arr[i] << std::endl;
+    }
+}
+
+void references_to_pointers(int*& ptr)
+{// pass pointer by referance
+    ptr = nullptr;
+    // this changes the actual ptr argument passed in, not a copy
+}
+
+void get_sin_cos(double degrees, double& sin_out, double& cos_out)
+{// This function takes one parameter (by value) as input,
+    // and “returns” two parameters (by reference) as output.
+    // sin() and cos() take radians, not degrees, so we need to convert
+    static constexpr double pi{ 3.14159265358979323846 };// pie
+    double radians = degrees * pi / 180.0;
+    sin_out = std::sin(radians);
+    cos_out = std::cos(radians);
+    //Non-const references can only reference non-const l-values 
+    //(e.g. non-const variables), so a reference parameter cannot 
+    //accept an argument that is a const l-value or an r-value 
+    //(e.g. literals and the results of expressions).
+}
+
+void add_one(int& ref)
+{
+    ref++;
+}
+
+void pass_by_ref()
+{
+    int value{ 5 };
+    std::cout << "value = " << value << '\n';
+    add_one(value);
+    std::cout << "value = " << value << '\n';
+    // returning multile values
+    double sin(0.0);
+    double cos(0.0);
+
+    // get_sin_cos will return the sin and cos in variables sin and cos
+    get_sin_cos(30.0, sin, cos);
+    std::cout << "The sin is " << sin << '\n';
+    std::cout << "The cos is " << cos << '\n';
+
+    //It enlists the compilers help in ensuring values that shouldn’t 
+    //be changed aren’t changed (the compiler will throw an error if you try,
+    //like in the above example).
+    //It tells the programmer that the function won’t change the value of the argument.
+    //This can help with debugging.
+
+    //You can’t pass a const argument to a non - const reference parameter.
+    //Using const parameters ensures you can pass both non - constand const arguments
+    //to the function.
+    //Const references can accept any type of argument, 
+    //including non - const l - values, const l - values, and r - values.
+
+    //Rule
+    //When passing an argument by reference, 
+    //always use a const reference unless you need to change the value of the argument.
+
+    //Non-const references cannot bind to r-values. 
+    //A function with a non-const reference parameter 
+    //cannot be called with literals or temporaries.
+    /*
+     void foo(std::string& text) {}
+
+    int main()
+    {
+        std::string text{ "hello" };
+        foo(text); // ok
+        foo(text + " world"); // illegal, non-const references can't bind to r-values.
+        return 0;
+    }
+    */
+
+    int xx = { 5 };
+    int* ptr = &xx;
+    std::cout << "ptr is: " << (ptr ? "non-null" : "null") << '\n';
+    references_to_pointers(ptr);
+    std::cout << "ptr is: " << (ptr ? "non-null" : "null") << '\n';
+
+    int arr[]{ 99, 20, 14, 80 };
+    print_elements(arr);
+
+    //As a reminder, you can pass a C-style array by reference. 
+    //This is useful if you need the ability for the function to change the array 
+    //(e.g. for a sort function) or you need access to the array’s type information
+    //of a fixed array (to do sizeof() or a for-each loop). 
+    //However, note that in order for this to work, 
+    //you explicitly need to define the array size in the parameter:
+
+    //This means this only works with fixed arrays of one particular length.
+    //If you want this to work with fixed arrays of any length, 
+    //you can make the array length a template parameter
+
+    /*
+    Pros and cons of pass by reference
+
+    Advantages of passing by reference:
+
+    References allow a function to change the value of the argument,
+    which is sometimes useful.
+    Otherwise, const references can be used to guarantee the function won’t change
+    the argument.
+
+    Because a copy of the argument is not made,
+    pass by reference is fast, even when used with large structs or classes.
+    References can be used to return multiple values from a function (via out parameters).
+    References must be initialized, so there’s no worry about null values.
+
+    Disadvantages of passing by reference:
+
+    Because a non-const reference cannot be initialized with a
+    const l-value or an r-value (e.g. a literal or an expression),
+    arguments to non-const reference parameters must be normal variables.
+
+    It can be hard to tell whether an argument passed by non-const
+    reference is meant to be input, output, or both.
+    Judicious use of const and a naming suffix for out variables can help.
+
+    It’s impossible to tell from the function call whether the argument may change.
+    An argument passed by value and passed by reference looks the same.
+    We can only tell whether an argument is passed by value or reference
+    by looking at the function declaration.
+    This can lead to situations where the programmer does not realize
+    a function will change the value of the argument.
+
+    When to use pass by reference:
+
+    When passing structs or classes (use const if read-only).
+    When you need the function to modify an argument.
+    When you need access to the type information of a fixed array.
+    When not to use pass by reference:
+
+    When passing fundamental types that don’t need to be modified (use pass by value).
+    Rule: Use pass by (const) reference instead of pass by value for structs and classes
+    and other expensive-to-copy types.
+    */
+}
+
 
