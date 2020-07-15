@@ -10,7 +10,6 @@
 #include <numeric>
 #include <execution>
 #include <iterator> // for std::size
-#include <cmath>    // for std::sin() and std::cos()
 #include "Header.h"
 
 
@@ -18,7 +17,7 @@
 
 int main()
 {
-    pass_by_ref();
+   
 
     return 0;
 }
