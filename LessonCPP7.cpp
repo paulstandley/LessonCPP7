@@ -17,7 +17,7 @@
 
 int main()
 {
-    question6();
+   
 
     return 0;
 }
