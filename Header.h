@@ -36,6 +36,15 @@ void get_sin_cos(double degrees, double& sin_out, double& cos_out);
 void add_one(int& ref);
 void pass_by_ref();
 
+void set_to_null(int* temp_ptr);
+void passing_arguments_by_address(const int* array, int length);
+void set_to_six(int* tempPtr);
+void setToNull(int*& tempPtr);
+void foo1(int value);
+void foo2(int& reference);
+void foo3(int* address);
+void get_address();
+
 
 #endif // !LESSON_7
 
