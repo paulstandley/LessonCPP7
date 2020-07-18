@@ -148,6 +148,32 @@ void returning_values_by_value_reference_and_address()
     //the lifetime of the r-value (in this case, the return value of the function)
     //is extended to match the lifetime of the reference (in this case, cref)
 
+    //Lifetime extension doesn’t save dangling references
+    //const int& returnByReference()
+    //{
+    //    return 5;
+    //}
+
+    //int main()
+    //{
+    //    const int& ref{ returnByReference() }; // runtime error
+    //}
+
+    //In the above program, returnByReference() is returning a const reference to a
+    //value that will go out of scope when the function ends.
+    //This is normally a no-no, as it will result in a dangling reference.
+    
+    //However, we also know that assigning a value to a const reference 
+    //can extend the lifetime of that value. 
+    //So which takes precedence here? Does 5 go out of scope first,
+    //or does ref extend the lifetime of 5?
+
+    //The answer is that 5 goes out of scope first, 
+    //then the reference to 5 is copied back to the caller,
+    //and then ref extends the lifetime of the now-dangling reference.
+
+    const int& ref{ return_by_value(5) }; 
+    // ok, we're extending the lifetime of the copy passed back to main
 }
 
 int main()
