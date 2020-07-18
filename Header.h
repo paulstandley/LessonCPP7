@@ -45,6 +45,27 @@ void foo2(int& reference);
 void foo3(int* address);
 void get_address();
 
+int return_by_value(int x);
+int* return_by_address(int x);
+int* allocate_array(int size);
+int& get_element(std::array<int, 25>& array, int index);
+
+//struct Struct_param
+//{
+//    int m_x;
+//    double m_y;
+//};
+
+//Struct_param return_struct()
+//{
+//    Struct_param s;
+//    s.m_x = 5;
+//    s.m_y = 6.7;
+//    return s;
+//}
+//void returning_values_by_value_reference_and_address();
+
+
 
 #endif // !LESSON_7
 

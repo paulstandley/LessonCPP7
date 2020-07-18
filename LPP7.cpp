@@ -11,6 +11,7 @@
 #include <execution>
 #include <iterator> // for std::size
 #include <cmath>    // for std::sin() and std::cos()
+#include <tuple>
 #include "Header.h"
 
 
@@ -639,5 +640,215 @@ the value pointed to by the argument.
     */
 }
 
+int return_by_value(int x)
+{// double value
+    //When to use return by value:
+    //When returning variables that were declared inside the function
+    //    When returning function arguments that were passed by value
+
+    //    When not to use return by value :
+    //When returning a built - in array or pointer(use return by address)
+    //    When returning a large struct or class (use return by reference)
+
+    int value{ x * 2 };
+    return value;
+}
+
+int* return_by_address(int x)
+{// return address
+    int value{ x * 2 };
+    return &value;
+    // value is destroyed just after its address is returned to the caller.
+    //The end result is that the caller ends up with the address of 
+    //non-allocated memory (a dangling pointer), which will cause problems if used.
+}
+
+int* allocate_array(int size)
+{// return dynamically allocated memory
+    return new int[size];
+    //This works because dynamically allocated memory does not go out of scope 
+    //at the end of the block in which it is declared, 
+    //so that memory will still exist when the address is returned back to the caller. 
+    //Keeping track of manual allocations can be difficult.
+}
+
+// Returns a reference to the index element of array
+int& get_element(std::array<int, 25>& array, int index)
+{
+    // we know that array[index] will not be destroyed when we return to the caller (since the caller passed in the array in the first place!)
+    // so it's okay to return it by reference
+    return array[index];
+}
+
+std::tuple<int, double> return_tuple()
+{// return a tuple that contains an int and a double
+    return { 5, 6.7 };
+}
+
+//void returning_values_by_value_reference_and_address()
+//{
+    //int value{ return_by_value(33) };
+    //std::cout << "Return by value : " << value << '\n';
+
+    //int* address{ return_by_address(44) };
+    //std::cout << "Return by address : " << &address << '\n';
+
+    // Return by address was often used to return 
+    // dynamically allocated memory to the caller:
+    //int* array{ allocate_array(25) };
+    // do stuff with array
+    //delete[] array;
+
+    //When to use return by address:
+    //When returning dynamically allocated memoryand you can’t use a type that handles allocations for you
+    //When returning function arguments that were passed by address
+
+    //When not to use return by address :
+    //When returning variables that were declared inside the function or parameters that were passed by value(use return by value)
+    //When returning a large struct or class that was passed by reference
+    //(use return by reference)
+
+    //Return by reference:
+    //Similar to pass by address, values returned by reference must be variables
+    //(you should not return a reference to a literal or an expression 
+    //that resolves to a temporary value, as those will go out of scope
+    //at the end of the functionand you’ll end up returning a dangling reference).
+
+    //When a variable is returned by reference, 
+    //a reference to the variable is passed back to the caller. 
+    //The caller can then use this reference to continue modifying the variable,
+    //which can be useful at times. Return by reference is also fast,
+    //which can be useful when returning structs and classes.
+
+    //Return by reference is typically used to return arguments 
+    //passed by reference to the function back to the caller.
+
+    //std::array<int, 25> array1;
+    // Set the element of array with index 10 to the value 5
+    //get_element(array1, 10) = 5;
+    //std::cout << array1[10] << '\n';
+
+    //When to use return by reference:
+
+    //When returning a reference parameter:
+    //    When returning a member of an object that was passed into the function
+    //    by reference or address.
+    //    When returning a large struct or class that will not be destroyed 
+    //    at the end of the function(e.g.one that was passed in by reference)
+
+    //When not to use return by reference :
+    //    When returning variables that were declared inside the function
+    //    or parameters that were passed by value(use return by value)
+    //    When returning a built - in array or pointer value(use return by address)
+
+    //Mixing return references and values
+    //Although a function may return a value or a reference, 
+    //the caller may or may not assign the result to a variable or reference accordingly.
+
+    //int returnByValue()
+    //{
+    //    return 5;
+    //}
+
+    //int& returnByReference()
+    //{
+    //    static int x{ 5 }; // static ensures x isn't destroyed when the function ends
+    //    return x;
+    //}
+
+    //int giana{ returnByReference() }; 
+    // case A -- ok, treated as return by value
+    //int& ref{ returnByValue() }; 
+    // case B -- compile error since the value is an r-value, and an r-value can't bind to a non-const reference
+    //const int& cref{ returnByValue() }; 
+    // case C -- ok, the lifetime of the return value is extended to the lifetime of cref
+
+    //In case A, we’re assigning a reference return value to a non-reference variable. 
+    //Because giana isn’t a reference, the return value is copied into giana, 
+    //as if returnByReference() had returned by value.
+
+    //In case B, we’re trying to initialize reference ref with the copy 
+    //of the return value returned by returnByValue(). 
+    //However, because the value being returned doesn’t have an address 
+    //(it’s an r-value), this will cause a compile error.
+
+    //In case C, we’re trying to initialize const reference cref with the 
+    //copy of the return value returned by returnByValue().
+    //Because const references can bind to r-values, there’s no problem here. 
+    //Normally, r-values expire at the end of the expression 
+    //in which they are created -- however, when bound to a const reference, 
+    //the lifetime of the r-value (in this case, the return value of the function)
+    //is extended to match the lifetime of the reference (in this case, cref)
+
+    //Lifetime extension doesn’t save dangling references
+    //const int& returnByReference()
+    //{
+    //    return 5;
+    //}
+
+    //int main()
+    //{
+    //    const int& ref{ returnByReference() }; // runtime error
+    //}
+
+    //In the above program, returnByReference() is returning a const reference to a
+    //value that will go out of scope when the function ends.
+    //This is normally a no-no, as it will result in a dangling reference.
+
+    //However, we also know that assigning a value to a const reference 
+    //can extend the lifetime of that value. 
+    //So which takes precedence here? Does 5 go out of scope first,
+    //or does ref extend the lifetime of 5?
+
+    //The answer is that 5 goes out of scope first, 
+    //then the reference to 5 is copied back to the caller,
+    //and then ref extends the lifetime of the now-dangling reference.
+
+    //const int& ref{ return_by_value(5) };
+    // ok, we're extending the lifetime of the copy passed back to main
+
+    // Returning multiple values
+
+    //out parameters provide one method for passing multiple bits of data back to the caller.
+    //don’t recommend this method.
+
+    //Struct_param sas{ return_struct() };
+    //std::cout << sas.m_x << ' ' << sas.m_y << '\n';
+    //A way (introduced in C++11) is to use std::tuple. 
+    //A tuple is a sequence of elements that may be different types, 
+    //where the type of each element must be explicitly specified.
+    //std::tuple<int, double> return_tuple();
+    //std::tuple s{ return_tuple() };
+    // get our tuple
+    // std::cout << std::get<0>(s) << ' ' << std::get<1>(s) << '\n';
+    // use std::get<n> to get the nth element of the tuple
+
+    //int aa;
+    //double bb;
+    //std::tie(aa, bb) = return_tuple();
+    // put elements of tuple in variables a and b
+    //std::cout << aa << ' ' << bb << '\n';
+    //As of C++17, a structured binding declaration can be used to simplify 
+    //splitting multiple returned values into separate variables:
+    //auto [ab, ba] { return_tuple() }; // used structured binding declaration to put results of tuple in variables a and b
+    //std::cout << ab << ' ' << ba << '\n';
+
+    //Using a struct is a better option than a tuple if you’re using the 
+    //struct in multiple places. However, 
+    //for cases where you’re just packaging up these values to return 
+    //and there would be no reuse from defining a new struct, 
+    //a tuple is a bit cleaner since it doesn’t introduce a new user-defined data type.
+    // we don't live up to our levels of expections we fall to the level of our traning
+
+    //Conclusion
+    //Most of the time, 
+    //return by value will be sufficient for your needs.
+    //It’s also the most flexibleand safest way to return information to the caller.
+    //However, return by reference or address can also be useful, 
+    //particularly when working with dynamically allocated classes or structs.
+    //When using return by reference or address, 
+    //make sure you are not returning a reference to, 
+    //or the address of, a variable that will go out of scope when the function returns!
+//}
 
 
