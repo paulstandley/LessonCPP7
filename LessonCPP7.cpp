@@ -45,6 +45,14 @@ int* allocate_array(int size)
     //Keeping track of manual allocations can be difficult.
 }
 
+// Returns a reference to the index element of array
+int& get_element(std::array<int, 25>& array, int index)
+{
+    // we know that array[index] will not be destroyed when we return to the caller (since the caller passed in the array in the first place!)
+    // so it's okay to return it by reference
+    return array[index];
+}
+
 void returning_values_by_value_reference_and_address()
 {
     int value{ return_by_value(33) };
@@ -67,6 +75,79 @@ void returning_values_by_value_reference_and_address()
     //When returning variables that were declared inside the function or parameters that were passed by value(use return by value)
     //When returning a large struct or class that was passed by reference
     //(use return by reference)
+
+    //Return by reference:
+    //Similar to pass by address, values returned by reference must be variables
+    //(you should not return a reference to a literal or an expression 
+    //that resolves to a temporary value, as those will go out of scope
+    //at the end of the functionand you’ll end up returning a dangling reference).
+
+    //When a variable is returned by reference, 
+    //a reference to the variable is passed back to the caller. 
+    //The caller can then use this reference to continue modifying the variable,
+    //which can be useful at times. Return by reference is also fast,
+    //which can be useful when returning structs and classes.
+
+    //Return by reference is typically used to return arguments 
+    //passed by reference to the function back to the caller.
+
+    std::array<int, 25> array1;
+    // Set the element of array with index 10 to the value 5
+    get_element(array1, 10) = 5;
+    std::cout << array1[10] << '\n';
+
+    //When to use return by reference:
+    
+    //When returning a reference parameter:
+    //    When returning a member of an object that was passed into the function
+    //    by reference or address.
+    //    When returning a large struct or class that will not be destroyed 
+    //    at the end of the function(e.g.one that was passed in by reference)
+    
+    //When not to use return by reference :
+    //    When returning variables that were declared inside the function
+    //    or parameters that were passed by value(use return by value)
+    //    When returning a built - in array or pointer value(use return by address)
+
+    //Mixing return references and values
+    //Although a function may return a value or a reference, 
+    //the caller may or may not assign the result to a variable or reference accordingly.
+
+    //int returnByValue()
+    //{
+    //    return 5;
+    //}
+
+    //int& returnByReference()
+    //{
+    //    static int x{ 5 }; // static ensures x isn't destroyed when the function ends
+    //    return x;
+    //}
+
+    //int giana{ returnByReference() }; 
+    // case A -- ok, treated as return by value
+    //int& ref{ returnByValue() }; 
+    // case B -- compile error since the value is an r-value, and an r-value can't bind to a non-const reference
+    //const int& cref{ returnByValue() }; 
+    // case C -- ok, the lifetime of the return value is extended to the lifetime of cref
+
+    //In case A, we’re assigning a reference return value to a non-reference variable. 
+    //Because giana isn’t a reference, the return value is copied into giana, 
+    //as if returnByReference() had returned by value.
+
+    //In case B, we’re trying to initialize reference ref with the copy 
+    //of the return value returned by returnByValue(). 
+    //However, because the value being returned doesn’t have an address 
+    //(it’s an r-value), this will cause a compile error.
+
+    //In case C, we’re trying to initialize const reference cref with the 
+    //copy of the return value returned by returnByValue().
+    //Because const references can bind to r-values, there’s no problem here. 
+    //Normally, r-values expire at the end of the expression 
+    //in which they are created -- however, when bound to a const reference, 
+    //the lifetime of the r-value (in this case, the return value of the function)
+    //is extended to match the lifetime of the reference (in this case, cref)
+
 }
 
 int main()
