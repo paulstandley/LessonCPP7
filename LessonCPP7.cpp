@@ -36,7 +36,35 @@ void print_employee_name(const Employee &employee)
     std::cout << "Question(2) print name " << employee.name << '\n';
 }
 
+int get_index_of_largest_value(const std::vector<int>& array)
+{//std::max_element is a standard function.
+    int length{ static_cast<int>(size(array)) };
+    int big_num{ 0 };
 
+    for (int value_index : array)
+    {
+        if (value_index > big_num)
+        {
+            big_num = value_index;
+        }
+    }
+
+    for (int i = 0; i < length; i++)
+    {
+        if (big_num == array[i])
+        {
+            return i;
+        }
+    }
+}
+
+const std::string& getElement(const std::vector<std::string>& array, const int index)
+{//(5)
+    //A function named getElement() that takes an array of std::string 
+    //(as a std::vector) and an index and returns the array element at that index 
+    //(not a copy). Assume the index is valid, and the return value is const.
+    return array[index];
+}
 
 void lesson_7_quiz()
 {
@@ -58,8 +86,12 @@ void lesson_7_quiz()
     //std::pair<int, int> minmax(const int x, const int y);
     //std::minmax is a standard function.
 
-
+    std::vector array1{29, 54, 66, 21, 69, 32};
+    std::cout << "Question 4 largest index in  vector : " << get_index_of_largest_value(array1) << '\n';
     
+    const std::vector<std::string>& array2{ "Paul" };
+    std::string element2{ getElement(array2, 0) };
+    std::cout << "Question 5 string element " << element2 << '\n';
 }
 
 
