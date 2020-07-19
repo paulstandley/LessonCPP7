@@ -65,6 +65,26 @@ int& get_element(std::array<int, 25>& array, int index);
 //}
 //void returning_values_by_value_reference_and_address();
 
+int sum_to(const int value);
+
+struct Employee
+{
+    std::string name{};
+    int id{};
+};
+
+void print_employee_name(const Employee& employee);
+int get_index_of_largest_value(const std::vector<int>& array);
+const std::string& getElement(const std::vector<std::string>& array, const int index);
+void lesson_7_quiz();
+
+int overloaded(int value);
+double overloaded(double value);
+void print(unsigned int value);
+void print(float value);
+void function_overloading();
+
+
 
 
 #endif // !LESSON_7
