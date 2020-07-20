@@ -14,52 +14,50 @@
 #include "Header.h"
 
 
-void optional_parameter(int x, int y = 10)
-{// 10 is the default argument, y is now an optional parameter
-    std::cout << "x = " << x << '\n' << "y = " << y << '\n';
-}
-
-void multiple_default_arguments(int x = 10, int y = 20, int z = 30)
+int foo()
 {
-    std::cout << "Values: " << x << " " << y << " " << z << '\n';
+    return 5;
 }
 
-void default_arguments()
-{// y will use default argument 10
-    optional_parameter(1);
-    optional_parameter(3, 4);
-    //Default arguments are an excellent option when the function 
-    //needs a value that the user may or may not want to override
+int goo()
+{
+    return 6;
+}
 
-    multiple_default_arguments(1, 2, 3);
-    multiple_default_arguments(1, 2);
-    multiple_default_arguments(1);
-    multiple_default_arguments();
+void function_pointers()
+{
+    std::cout << foo << '\n';
+    // we meant to call foo(), but instead we're printing foo itself!
+    std::cout << reinterpret_cast<void*>(foo) << '\n'; 
+    // Tell C++ to interpret function foo as a void pointer
 
-    //Best practice is to declare the default argument in the forward declaration 
-    //and not in the function definition,
-    //as the forward declaration is more likely to be seen by other files 
-    //(particularly if it’s in a header file).
+    // fcnPtr is a pointer to a function that takes no arguments and returns an integer
+    //int (*funcptr)();
+    //The parenthesis around *fcnPtr are necessary for precedence reasons, as int *fcnPtr()
+    //would be interpreted as a forward declaration for a function named fcnPtr that takes 
+    //no parameters and returns a pointer to an integer.
+    //To make a const function pointer, the const goes after the asterisk :
+    //int (* const fcnPtr)();
 
-    //Default arguments and function overloading
-    //Functions with default arguments may be overloaded.
-    //void print(std::string string);
-    //void print(char ch = ' ')
-    //However, it is important to note that optional parameters do 
-    //NOT count towards the parameters that make the function unique.
-    //Consequently, the following is not allowed:
-    //void printValues(int x);
-    //void printValues(int x, int y = 20);
+    int (*fcnPtr1)() { foo }; // fcnPtr points to function foo
+    fcnPtr1 = goo; // fcnPtr now points to function goo
 
-    //Default arguments provide a useful mechanism to specify parameters
-    //that the user may optionally provide values for. 
-    //They are frequently used in C++
+    //One common mistake is to do this:
+    //fcnPtr1 = goo();
+    //This would actually assign the return value from a call to function goo()
+    //to fcnPtr, which isn’t what we want.
+    //We want fcnPtr to be assigned the address of function goo, 
+    //not the return value from function goo().
+    //So no parenthesis are needed
+
+    
+
 }
 
 
 int main()
 {
-    default_arguments();
+    function_pointers();
     
 
     return 0;
