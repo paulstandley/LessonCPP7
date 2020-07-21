@@ -50,7 +50,46 @@ void function_pointers()
     //not the return value from function goo().
     //So no parenthesis are needed
 
-    
+    //Note that the type (parameters and return type) 
+    //of the function pointer must match the type of the function.
+    // function prototypes
+    //int foo();
+    //double goo();
+    //int hoo(int x);
+
+    // function pointer assignments
+    //int (*fcnPtr1)() { foo }; // okay
+    //int (*fcnPtr2)() { goo }; // wrong -- return types don't match!
+    //double (*fcnPtr4)() { goo }; // okay
+    //fcnPtr1 = hoo; // wrong -- fcnPtr1 has no parameters, but hoo() does
+    //int (*fcnPtr3)(int) { hoo }; // okay
+
+    //Unlike fundamental types, 
+    //C++ will implicitly convert a function into a function pointer if needed 
+    //(so you don’t need to use the address-of operator (&) 
+    //to get the function’s address).
+    //However, it will not implicitly convert function pointers to void pointers,
+    //or vice-versa.
+
+    //Calling a function using a function pointer
+    int (*fcnPtr2)(int) { foo }; // Initialize fcnPtr with function foo
+    (*fcnPtr2)(5); // call function foo(5) through fcnPtr.
+    //The second way is via implicit dereference:
+    int (*fcnPtr3)(int) { foo }; // Initialize fcnPtr with function foo
+    fcnPtr3(5); // call function foo(5) through fcnPtr.
+    //As you can see, the implicit dereference method looks just like a
+    //normal function call -- which is what you’d expect,
+    //since normal function names are pointers to functions anyway!
+
+    //One interesting note: 
+    //Default parameters won’t work for functions called through function pointers.
+    //Default parameters are resolved at compile-time 
+    //(that is, if you don’t supply an argument for a defaulted parameter, 
+    //the compiler substitutes one in for you when the code is compiled).
+    //However, function pointers are resolved at run-time. 
+    //Consequently, default parameters can not be resolved when making a 
+    //function call with a function pointer.
+    //You’ll explicitly have to pass in values for any defaulted parameters in this case.
 
 }
 
