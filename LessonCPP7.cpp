@@ -15,12 +15,22 @@
 #include "Header.h"
 
 
-double get_user_number()
+
+bool fp_stop_or_go()
+{
+    std::cout << "Calc n to stop anything else to continue: ";
+    char value{};
+    std::cin >> value;
+    std::cin.ignore();
+    return value == 'n' ? false : true;
+}
+
+double fp_get_user_number()
 {
     while (true)
     {
         std::cout << "Enter number: ";
-        int value{ 0 };
+        double value{ 0 };
         std::cin >> value;
         if (std::cin.fail()) 
         {
@@ -36,7 +46,7 @@ double get_user_number()
     }
 }
 
-char get_user_operator()
+char fp_get_user_operator()
 {
     while (true)
     {
@@ -60,27 +70,70 @@ char get_user_operator()
 
 double fp_add(const double x, const double y)
 {
-    return x + y;
+    return static_cast<double>(x + y);
 }
 
 double fp_subtract(const double x, const double y)
 {
-    return x - y;
+    return static_cast<double>(x - y);
 }
 
 double fp_multiply(const double x, const double y)
 {
-    return x * y;
+    return static_cast<double>(x * y);
 }
 
 double fp_divide(const double x, const double y)
 {
-    return x / y;
+    if (x != 0.0)
+    {
+        if (y == 0.0)// if y is 0.0 x is not so return x
+            return x;
+        return static_cast<double>(x / y);//do calac
+    }
+    else
+        return x;// if 0.0 return 0.0
 }
 
-void function_quiz()
+using arithmeticFcn = std::function<double(double, double)>;
+
+arithmeticFcn get_arithmetic_funcion(char operater_function)
+{
+    switch (operater_function)
+    {
+    default: // default is fp_add
+    case '+': return fp_add;
+    case '-': return fp_subtract;
+    case '*': return fp_multiply;
+    case '/': return fp_divide;
+    }
+}
+
+void calc_user_input()
+{
+    while (true)
+    {
+        if (fp_stop_or_go()) 
+        {
+            double user_number_1{ static_cast<double>(fp_get_user_number()) };
+            char user_operator{ fp_get_user_operator() };
+            double user_number_2{ static_cast<double>(fp_get_user_number()) };
+
+            arithmeticFcn func{ get_arithmetic_funcion(user_operator) };
+            double result{ static_cast<double>(func(user_number_1, user_number_2)) };
+
+            std::cout << user_number_1 << ' ' << user_operator << ' '
+                << user_number_2 << " = " << result << '\n';
+        }
+        else 
+            break;
+    }
+}
+
+void function_pointer_quiz()
 {
     //Quiz time!
+
     //1) In this quiz, we’re going to write a version of our basic calculator 
     //using function pointers.
 
@@ -88,33 +141,26 @@ void function_quiz()
     //mathematical operation(‘ + ’, ‘ - ‘, ‘ * ’, ‘ / ’).
     //Ensure the user enters a valid operation.
 
-    double user_number_1{ get_user_number() };
-    std::cout << "User number : " << user_number_1 << '\n';
-
-    double user_number_2{ get_user_number() };
-    std::cout << "User number : " << user_number_2 << '\n';
-
-    char user_operator{ get_user_operator() };
-    std::cout << "User operator : " << user_operator << '\n';
-
     //1b) Write functions named add(), subtract(), multiply(), and divide(). 
     //These should take two integer parameters and return an integer.
-
-    std::cout << fp_add(user_number_1, user_number_2) << '\n';
-    std::cout << fp_subtract(user_number_1, user_number_2) << '\n';
-    std::cout << fp_multiply(user_number_1, user_number_2) << '\n';
-    std::cout << fp_divide(user_number_1, user_number_2) << '\n';// check for 0
 
     //1c) Create a type alias named arithmeticFcn for a pointer to a
     //function that takes two integer parameters and returns an integer. 
     //Use std::function.
 
+    //1d) Write a function named getArithmeticFunction() that takes an 
+    //operator character and returns the appropriate function as a function pointer.
+
+    //1e) Modify your main() function to call getArithmeticFunction(). 
+    //Call the return value from that function with your inputs and print the result.
+
+    calc_user_input();
 }
 
 
 int main()
 {
-    function_quiz();
+    function_pointer_quiz();
     
 
     return 0;
