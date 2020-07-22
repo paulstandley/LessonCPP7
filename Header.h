@@ -88,6 +88,10 @@ void optional_parameter(int x, int y = 10);
 void multiple_default_arguments(int x = 10, int y = 20, int z = 30);
 void default_arguments();
 
+int foo();
+int goo();
+void function_pointers();
+
 
 
 #endif // !LESSON_7

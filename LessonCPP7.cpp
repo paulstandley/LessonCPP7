@@ -14,89 +14,99 @@
 #include "Header.h"
 
 
-int foo()
+// Default the sort to ascending sort
+//void selectionSort(int* array, int size, bool (*comparisonFcn)(int, int) = ascending);
+
+// Note our user-defined comparison is the third parameter
+void selectionSort(int* array, int size, bool (*comparisonFcn)(int, int))
 {
-    return 5;
+    // Step through each element of the array
+    for (int startIndex{ 0 }; startIndex < (size - 1); ++startIndex)
+    {
+        // bestIndex is the index of the smallest/largest element we've encountered so far.
+        int bestIndex{ startIndex };
+
+        // Look for smallest/largest element remaining in the array (starting at startIndex+1)
+        for (int currentIndex{ startIndex + 1 }; currentIndex < size; ++currentIndex)
+        {
+            // If the current element is smaller/larger than our previously found smallest
+            if (comparisonFcn(array[bestIndex], array[currentIndex])) // COMPARISON DONE HERE
+                // This is the new smallest/largest number for this iteration
+                bestIndex = currentIndex;
+        }
+
+        // Swap our start element with our smallest/largest element
+        std::swap(array[startIndex], array[bestIndex]);
+    }
 }
 
-int goo()
+// Here is a comparison function that sorts in ascending order
+// (Note: it's exactly the same as the previous ascending() function)
+bool ascending(int x, int y)
 {
-    return 6;
+    return x > y; // swap if the first element is greater than the second
 }
 
-void function_pointers()
+// Here is a comparison function that sorts in descending order
+bool descending(int x, int y)
 {
-    std::cout << foo << '\n';
-    // we meant to call foo(), but instead we're printing foo itself!
-    std::cout << reinterpret_cast<void*>(foo) << '\n'; 
-    // Tell C++ to interpret function foo as a void pointer
+    return x < y; // swap if the second element is greater than the first
+}
 
-    // fcnPtr is a pointer to a function that takes no arguments and returns an integer
-    //int (*funcptr)();
-    //The parenthesis around *fcnPtr are necessary for precedence reasons, as int *fcnPtr()
-    //would be interpreted as a forward declaration for a function named fcnPtr that takes 
-    //no parameters and returns a pointer to an integer.
-    //To make a const function pointer, the const goes after the asterisk :
-    //int (* const fcnPtr)();
+bool evensFirst(int x, int y)
+{
+    // if x is even and y is odd, x goes first (no swap needed)
+    if ((x % 2 == 0) && !(y % 2 == 0))
+        return false;
 
-    int (*fcnPtr1)() { foo }; // fcnPtr points to function foo
-    fcnPtr1 = goo; // fcnPtr now points to function goo
+    // if x is odd and y is even, y goes first (swap needed)
+    if (!(x % 2 == 0) && (y % 2 == 0))
+        return true;
 
-    //One common mistake is to do this:
-    //fcnPtr1 = goo();
-    //This would actually assign the return value from a call to function goo()
-    //to fcnPtr, which isn’t what we want.
-    //We want fcnPtr to be assigned the address of function goo, 
-    //not the return value from function goo().
-    //So no parenthesis are needed
+    // otherwise sort in ascending order
+    return ascending(x, y);
+}
 
-    //Note that the type (parameters and return type) 
-    //of the function pointer must match the type of the function.
-    // function prototypes
-    //int foo();
-    //double goo();
-    //int hoo(int x);
+// This function prints out the values in the array
+void printArray(int* array, int size)
+{
+    for (int index{ 0 }; index < size; ++index)
+        std::cout << array[index] << ' ';
+    std::cout << '\n';
+}
 
-    // function pointer assignments
-    //int (*fcnPtr1)() { foo }; // okay
-    //int (*fcnPtr2)() { goo }; // wrong -- return types don't match!
-    //double (*fcnPtr4)() { goo }; // okay
-    //fcnPtr1 = hoo; // wrong -- fcnPtr1 has no parameters, but hoo() does
-    //int (*fcnPtr3)(int) { hoo }; // okay
+void passing_functions_as_arguments_to_other_functions()
+{
+    //One of the most useful things to do with function pointers is pass a function as
+    //an argument to another function. Functions used as arguments to another function
+    //are sometimes called callback functions.
+    int array[9]{ 3, 7, 9, 5, 6, 1, 8, 2, 4 };
 
-    //Unlike fundamental types, 
-    //C++ will implicitly convert a function into a function pointer if needed 
-    //(so you don’t need to use the address-of operator (&) 
-    //to get the function’s address).
-    //However, it will not implicitly convert function pointers to void pointers,
-    //or vice-versa.
+    // Sort the array in descending order using the descending() function
+    selectionSort(array, 9, descending);
+    printArray(array, 9);
 
-    //Calling a function using a function pointer
-    int (*fcnPtr2)(int) { foo }; // Initialize fcnPtr with function foo
-    (*fcnPtr2)(5); // call function foo(5) through fcnPtr.
-    //The second way is via implicit dereference:
-    int (*fcnPtr3)(int) { foo }; // Initialize fcnPtr with function foo
-    fcnPtr3(5); // call function foo(5) through fcnPtr.
-    //As you can see, the implicit dereference method looks just like a
-    //normal function call -- which is what you’d expect,
-    //since normal function names are pointers to functions anyway!
+    // Sort the array in ascending order using the ascending() function
+    selectionSort(array, 9, ascending);
+    printArray(array, 9);
 
-    //One interesting note: 
-    //Default parameters won’t work for functions called through function pointers.
-    //Default parameters are resolved at compile-time 
-    //(that is, if you don’t supply an argument for a defaulted parameter, 
-    //the compiler substitutes one in for you when the code is compiled).
-    //However, function pointers are resolved at run-time. 
-    //Consequently, default parameters can not be resolved when making a 
-    //function call with a function pointer.
-    //You’ll explicitly have to pass in values for any defaulted parameters in this case.
+    selectionSort(array, 9, evensFirst);
+    printArray(array, 9);
 
+    //typedef bool (*validateFcn)(int, int);
+
+    //This defines a typedef called “validateFcn” 
+    //that is a pointer to a function that takes two ints and returns a bool.
+
+    //bool validate(int x, int y, validateFcn pfcn)
+    //using validateFcn = bool(*)(int, int); // type alias
+    //Using a type alias is identical to using a typedef
 }
 
 
 int main()
 {
-    function_pointers();
+    passing_functions_as_arguments_to_other_functions();
     
 
     return 0;
