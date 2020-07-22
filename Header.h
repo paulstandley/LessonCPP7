@@ -92,6 +92,14 @@ int foo();
 int goo();
 void function_pointers();
 
+void selectionSort(int* array, int size, bool (*comparisonFcn)(int, int));
+bool ascending(int x, int y);
+bool descending(int x, int y);
+bool evensFirst(int x, int y);
+void printArray(int* array, int size);
+void passing_functions_as_arguments_to_other_functions();
+
+
 
 
 #endif // !LESSON_7
