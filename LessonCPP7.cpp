@@ -11,6 +11,7 @@
 #include <execution>
 #include <iterator> // for std::size
 #include <tuple>
+#include <functional>
 #include "Header.h"
 
 
@@ -101,7 +102,44 @@ void passing_functions_as_arguments_to_other_functions()
     //bool validate(int x, int y, validateFcn pfcn)
     //using validateFcn = bool(*)(int, int); // type alias
     //Using a type alias is identical to using a typedef
+
+    //Introduced in C++11, 
+    //an alternate method of definingand storing function pointers is to use
+    //std::function, which is part of the standard library <functional> header.
+    //To define a function pointer using this method, declare a std::function object
+
+    std::function<int()> fcnPtr4{ foo };
+    // declare function pointer that returns an int and takes no parameters
+    fcnPtr4 = goo;
+    // fcnPtr now points to function goo
+    std::cout << fcnPtr4() << '\n'; 
+    // call the function just like normal
+
+    using validateFcnRaw = bool(*)(int, int); // type alias to raw function pointer
+    using validateFcn = std::function<bool(int, int)>; // type alias to std::function
+
+    //Type inference for function pointers
+    auto fcnPtr5{ foo };
+    std::cout << fcnPtr5() << '\n';
+    //The downside is, of course, that all of the details about the 
+    //function’s parameters types and return type are hidden, 
+    //so it’s easier to make a mistake when making a call with the function,
+    //or using its return value.
+    
+    //Conclusion
+    //Function pointers are useful primarily when you want to store functions in an 
+    //array(or other structure), 
+    //or when you need to pass a function to another function.
+    //Because the native syntax to declare function pointers is ugly and error prone,
+    //we recommend using std::function.
+    //In places where a function pointer type is only used once
+    //(e.g.a single parameter or return value), 
+    //std::function can be used directly.
+    //In places where a function pointer type is used multiple times, a type alias 
+    //to a std::function is a better choice(to prevent repeating yourself).
 }
+
+
 
 
 int main()

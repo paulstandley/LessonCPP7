@@ -11,6 +11,7 @@
 #include <execution>
 #include <iterator> // for std::size
 #include <tuple>
+#include <functional>
 #include "Header.h"
 
 int overloaded(int value)
