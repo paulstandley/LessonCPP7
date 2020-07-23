@@ -99,6 +99,18 @@ bool evensFirst(int x, int y);
 void printArray(int* array, int size);
 void passing_functions_as_arguments_to_other_functions();
 
+bool fp_stop_or_go();
+double fp_get_user_number();
+char fp_get_user_operator();
+double fp_add(const double x, const double y);
+double fp_subtract(const double x, const double y);
+double fp_multiply(const double x, const double y);
+double fp_divide(const double x, const double y);
+#include <functional>
+using arithmeticFcn = std::function<double(double, double)>;
+arithmeticFcn get_arithmetic_funcion(char operater_function);
+void calc_user_input();
+void function_pointer_quiz();
 
 
 
