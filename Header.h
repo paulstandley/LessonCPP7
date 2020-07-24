@@ -114,6 +114,16 @@ void function_pointer_quiz();
 
 void the_stack_and_heap();
 
+void print_stack(const std::vector<int>& stack);
+void std_vector_capacity_and_stack_behavior();
+
+// h/t to potterman28wxcv for a variant of this code
+int fibonacci0(int count);
+
+int fibonacci1(int count);
+int sumTo(int sumto);
+void count_down(int count);
+void recursion();
 
 #endif // !LESSON_7
 

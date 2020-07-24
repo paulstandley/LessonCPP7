@@ -709,6 +709,316 @@ void the_stack_and_heap()
     //or other memory - intensive structures.
 }
 
+void print_stack(const std::vector<int>& stack)
+{
+    for (auto element : stack)
+        std::cout << element << ' ';
+    std::cout << "(cap " << stack.capacity() << " length " << stack.size() << ")\n";
+}
+
+void std_vector_capacity_and_stack_behavior()
+{
+    //std::vector capacity and stack behavior
+    //Length vs capacity
+
+    int* array0{ new int[10] { 1, 2, 3, 4, 5 } };
+    delete[] array0;
+    //We would say that this array has a length of 10, even though we’re only using 5
+    //of the elements that we allocated
+
+    //However, what if we only wanted to iterate over the elements we’ve initialized, 
+    //reserving the unused ones for future expansion? 
+    //In that case, we’d need to separately track how many elements were “used”
+    //from how many elements were allocated. 
+    //Unlike a built-in array or a std::array, 
+    //which only remembers its length, 
+    //std::vector contains two separate attributes: length and capacity. 
+    //In the context of a std::vector, length is how many elements are being used 
+    //in the array, whereas capacity is how many elements were allocated in memory.
+
+    std::vector<int> array1{ 0, 1, 2 };
+    array1.resize(5); // set length to 5
+    std::cout << "The length is: " << array1.size() << '\n';
+    for (auto element : array1)
+        std::cout << element << ' ';
+
+    //In the above example, we’ve used the resize() 
+    //function to set the vector’s length to 5.
+    //This tells variable array that we’re intending to use the first 5 elements
+    //of the array, so it should consider those in active use. 
+    //However, that leaves an interesting question: 
+    //what is the capacity of this array?
+
+    std::cout << "The length is: " << array1.size() << '\n';
+    std::cout << "The capacity is: " << array1.capacity() << '\n';
+
+    //More length vs. capacity
+
+    //Why differentiate between lengthand capacity ? 
+    //std::vector will reallocate its memory if needed,
+    //but like Melville’s Bartleby, it would prefer not to, 
+    //because resizing an array is computationally expensive.Consider the following
+
+    std::vector<int> array2{};
+    array2 = { 0, 1, 2, 3, 4 }; // okay, array length = 5
+    std::cout << "length: " << array2.size() << "  capacity: " << array2.capacity() << '\n';
+
+    array2 = { 9, 8, 7 }; // okay, array length is now 3!
+    std::cout << "length: " << array2.size() << "  capacity: " << array2.capacity() << '\n';
+    std::cout << '\n';
+
+    //Note that although we assigned a smaller array to our vector, 
+    //it did not reallocate its memory (the capacity is still 5). 
+    //It simply changed its length, 
+    //so it knows that only the first 3 elements are valid at this time.
+
+    //Array subscripts and at() are based on length, not capacity
+
+    //The range for the subscript operator ([]) and at() function is based on the the
+    //vector’s length, not the capacity. 
+    //Consider the array in the previous example, which has length 3 and capacity 5.
+    //What happens if we try to access the array element with index 4? 
+    //The answer is that it fails, since 4 is greater than the length of the array.
+
+    //Note that a vector will not resize itself based on a call to the subscript 
+    //operator or at() function
+
+    std::vector<int> stack{};
+
+    print_stack(stack);
+
+    stack.push_back(5); // push_back() pushes an element on the stack
+    print_stack(stack);
+
+    stack.push_back(3);
+    print_stack(stack);
+
+    stack.push_back(2);
+    print_stack(stack);
+
+    std::cout << "top: " << stack.back() << '\n'; // back() returns the last element
+
+    stack.pop_back(); // pop_back() pops an element off the stack
+    print_stack(stack);
+
+    stack.pop_back();
+    print_stack(stack);
+
+    stack.pop_back();
+    print_stack(stack);
+
+    //We can see that the capacity was preset to 5 and didn’t change
+    //over the lifetime of the program
+
+    //Vectors may allocate extra capacity
+    //When a vector is resized, the vector may allocate more capacity than is needed.
+    //This is done to provide some “breathing room” for additional elements, 
+    //to minimize the number of resize operations needed.
+    //Let’s take a look at this
+
+    std::vector<int> v{ 0, 1, 2, 3, 4 };
+    std::cout << '\n';
+    std::cout << "size: " << v.size() << "  cap: " << v.capacity() << '\n';
+    for (auto element : v)
+        std::cout << element << ' ';
+    std::cout << '\n';
+    v.push_back(5); // add another element
+    std::cout << "size: " << v.size() << "  cap: " << v.capacity() << '\n';
+    for (auto element : v)
+        std::cout << element << ' ';
+    std::cout << '\n';
+
+    //When we used push_back() to add a new element,
+    //our vector only needed room for 6 elements, but allocated room for 7.
+    //This was done so that if we were to push_back() another element,
+    //it wouldn’t need to resize immediately.
+
+    //If, when, and how much additional capacity is allocated
+    //is left up to the compiler implementer.
+}
+
+// h/t to potterman28wxcv for a variant of this code
+int fibonacci0(int count)
+{
+    // We'll use a static std::vector to cache calculated results
+    static std::vector<int> results{ 0, 1 };
+
+    // If we've already seen this count, then use the cache'd result
+    if (count < static_cast<int>(std::size(results)))
+        return results[count];
+    else
+    {
+        // Otherwise calculate the new result and add it
+        results.push_back(fibonacci0(count - 1) + fibonacci0(count - 2));
+        return results[count];
+    }
+}
+
+int fibonacci1(int count)
+{
+    if (count == 0)
+        return 0; // base case (termination condition)
+    if (count == 1)
+        return 1; // base case (termination condition)
+    return fibonacci1(count - 1) + fibonacci1(count - 2);
+}
+
+int sumTo(int sumto)
+{
+    // return the sum of all the integers between 1 (inclusive) and sumto (inclusive)
+    // returns 0 for negative numbers
+    if (sumto <= 0)
+        return 0; // base case (termination condition) when user passed in an unexpected parameter (0 or negative)
+    else if (sumto == 1)
+        return 1; // normal base case (termination condition)
+    else
+        return sumTo(sumto - 1) + sumto; // recursive function call
+    //Recursive programs are often hard to figure out just by looking at them. 
+    //It’s often instructive to see what happens when we call a recursive function
+    //with a particular value. 
+
+    //So let’s see what happens when we call this function with parameter sumto = 5.
+
+    //sumTo(5) called, 5 <= 1 is false, so we return sumTo(4) + 5.
+    //sumTo(4) called, 4 <= 1 is false, so we return sumTo(3) + 4.
+    //sumTo(3) called, 3 <= 1 is false, so we return sumTo(2) + 3.
+    //sumTo(2) called, 2 <= 1 is false, so we return sumTo(1) + 2.
+    //sumTo(1) called, 1 <= 1 is true, so we return 1. This is the termination condition
+
+    //Now we unwind the call stack (popping each function off the call stack as it returns)
+
+    //sumTo(1) returns 1.
+    //sumTo(2) returns sumTo(1) + 2, which is 1 + 2 = 3.
+    //sumTo(3) returns sumTo(2) + 3, which is 3 + 3 = 6.
+    //sumTo(4) returns sumTo(3) + 4, which is 6 + 4 = 10.
+    //sumTo(5) returns sumTo(4) + 5, which is 10 + 5 = 15.
+
+    //Because recursive functions can be hard to understand by looking at them, 
+    //good comments are particularly important.
+
+    //Note that in the above code, we recurse with value sumto - 1 rather than --sumto.
+    //We do this because operator-- has a side effect, 
+    //and using a variable that has a side effect applied more than once 
+    //in a given expression will result in undefined behavior. 
+    //Using sumto - 1 avoids side effects, 
+    //making sumto safe to use more than once in the expression.
+}
+
+void count_down(int count)
+{//infinite loop
+    std::cout << "push " << count << '\n';
+    //count_down(count - 1); // countDown() calls itself recursively
+    if (count != 0)
+    {
+        count_down(count - 1); // countDown() calls itself recursively
+    }
+    std::cout << "pop " << count << '\n';
+    //Because of the termination condition, 
+    //countDown(1) does not call countDown(0) -- instead, 
+    //the “if statement” does not execute, so it prints “pop 1” and then terminates. 
+    //At this point, countDown(1) is popped off the stack, 
+    //and control returns to countDown(2). 
+    //countDown(2) resumes execution at the point after countDown(1) was called, 
+    //so it prints “pop 2” and then terminates. 
+    //The recursive function calls get subsequently popped off the stack until
+    //all instances of countDown have been removed.
+}
+
+void recursion()
+{//Rule: Generally favor iteration over recursion, except when recursion really makes sense.
+    //A recursive function in C++ is a function that calls itself. 
+    count_down(5);
+    //When countDown(5) is called, “push 5” is printed, and countDown(4) is called. 
+    //countDown(4) prints “push 4” and calls countDown(3). 
+    //countDown(3) prints “push 3” and calls countDown(2). 
+    //The sequence of countDown(n) calling countDown(n-1) is repeated indefinitely, 
+    //effectively forming the recursive equivalent of an infinite loop.
+
+    std::cout << '\n';
+    std::cout << "sumto = " << sumTo(10) << '\n';
+
+    //Recursive algorithms
+
+    //Recursive functions typically solve a problem by first finding the solution
+    //to a subset of the problem(recursively), 
+    //and then modifying that sub - solution to get to a solution.
+    //In the above algorithm, sumTo(value) first solves sumTo(value - 1), 
+    //and then adds the value of variable value to find the solution for sumTo(value).
+
+    //In many recursive algorithms, some inputs produce trivial outputs.
+    //For example, sumTo(1) has the trivial output 1 
+    //(you can calculate this in your head), 
+    //and does not benefit from further recursion.
+    //Inputs for which an algorithm trivially produces an output is called a base case.
+    //Base cases act as termination conditions for the algorithm.
+    //Base cases can often be identified by considering the output 
+    //for an input of 0, 1, "", '', or null.
+
+    //Fibonacci numbers
+
+    //One of the most famous mathematical recursive algorithms is the Fibonacci sequence.
+    //Fibonacci sequences appear in many places in nature, 
+    //such as branching of trees, the spiral of shells, the fruitlets of a pineapple,
+    //an uncurling fern frond, and the arrangement of a pine cone.
+
+    //Consequently, it's rather simple to write a (not very efficient) 
+    //recursive function to calculate the nth Fibonacci number
+
+    std::cout << '\n';
+    for (int count = 0; count < 13; ++count)
+        std::cout << fibonacci1(count) << " ";
+    std::cout << '\n';
+
+    //The above recursive Fibonacci algorithm isn't very efficient, 
+    //in part because each call to a Fibonacci non-base case results in two more 
+    //Fibonacci calls. 
+    //This produces an exponential number of function calls 
+    //(in fact, the above example calls fibonacci() 1205 times!).
+    //There are techniques that can be used to reduce the number of calls necessary. 
+    //One technique, called memoization, caches the results of expensive 
+    //function calls so the result can be returned when the same input occurs again.
+
+    for (int count = 0; count < 13; ++count)
+        std::cout << fibonacci0(count) << " ";
+    std::cout << '\n';
+
+    //This memoized version makes 35 function calls, 
+    //which is much better than the 1205 of the original algorithm.
+
+    //Recursive vs iterative
+
+    //One question that is often asked about recursive functions is, 
+    //"Why use a recursive function if you can do many of the same tasks iteratively
+    //(using a for loop or while loop)?". 
+    //It turns out that you can always solve a recursive problem iteratively
+    //-- however, for non-trivial problems, 
+    //the recursive version is often much simpler to write (and read). 
+    //For example, while it's possible to write the Fibonacci function iteratively, 
+    //it's a little more difficult! (Try it!)
+
+    //Iterative functions (those using a for-loop or while-loop) 
+    //are almost always more efficient than their recursive counterparts. 
+    //This is because every time you call a function there is some amount of 
+    //overhead that takes place in pushing and popping stack frames.
+    //Iterative functions avoid this overhead.
+
+    //That’s not to say iterative functions are always a better choice.
+    //Sometimes the recursive implementation of a function is so much cleaner
+    //and easier to follow that incurring a little extra overhead is more
+    //than worth it for the benefit in maintainability, 
+    //particularly if the algorithm doesn't need to recurse too many 
+    //times to find a solution.
+
+    //In general, recursion is a good choice when most of the following are true:
+
+    //The recursive code is much simpler to implement.
+    //The recursion depth can be limited
+    //(e.g.there’s no way to provide an input that will cause it to recurse down 100, 000 levels).
+    //The iterative version of the algorithm requires managing a stack of data.
+    //This isn’t a performance - critical section of code.
+    //However, if the recursive algorithm is simpler to implement, 
+    //it may make sense to start recursivelyand then optimize to an iterative algorithm later.
+}
 
 
 
