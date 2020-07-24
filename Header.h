@@ -112,6 +112,7 @@ arithmeticFcn get_arithmetic_funcion(char operater_function);
 void calc_user_input();
 void function_pointer_quiz();
 
+void the_stack_and_heap();
 
 
 #endif // !LESSON_7
