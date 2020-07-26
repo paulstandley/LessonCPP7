@@ -125,5 +125,14 @@ int sumTo(int sumto);
 void count_down(int count);
 void recursion();
 
+void printBinary(unsigned int n);
+void print_binary(int x);
+int individual_digit_in_the_integer(int num);
+int factorial001(int num);
+void recursion_quiz();
+
+void handling_errors_cerr_and_exit();
+
+
 #endif // !LESSON_7
 
