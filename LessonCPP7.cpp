@@ -12,11 +12,30 @@
 #include <iterator> // for std::size
 #include <tuple>
 #include <functional>
+#include <cstdlib> // for std::exit()
+#include <limits>
 #include "Header.h"
 
 
+void printStringerr(const char* cstring)
+{
+    // Only print if cstring is non-null
+    if (cstring)
+        std::cout << cstring;
+    else
+        std::cerr << "function printString() received a null parameter";
+}
 
-void helloworld()
+int getArrayValueerr(const std::array<int, 10>& array, int index)
+{
+    // use if statement to detect violated assumption
+    if (index < 0 || index >= static_cast<int>(array.size()))
+        std::exit(2); // terminate program and return error number 2 to OS
+
+    return array[index];
+}
+
+void helloworlderr()
 {
     std::string hello{ "Hello, world!" };
     int index;
@@ -34,6 +53,34 @@ void helloworld()
             index = -1; // ensure index has an invalid value so the loop doesn't terminate
             continue; // this continue may seem extraneous, but it explicitly signals an intent to terminate this loop iteration
         }
+
+    } while (index < 0 || index >= static_cast<int>(hello.size())); // handle case where user entered an out of range integer
+
+    std::cout << "Letter #" << index << " is " << hello[index] << '\n';
+}
+
+void helloword1err()
+{
+    std::string hello{ "Hello, world!" };
+    int index;
+
+    do
+    {
+        std::cout << "Enter an index: ";
+        std::cin >> index;
+
+        //handle case where user entered a non-integer
+        if (std::cin.fail())
+        {
+            std::cin.clear(); // reset any error flags
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // ignore any characters in the input buffer
+            index = -1; // ensure index has an invalid value so the loop doesn't terminate
+            continue; // this continue may seem extraneous, but it explicitly signals an intent to terminate this loop iteration...
+        }
+
+        // ...just in case we added more stuff here later
+
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // ignore any remaining characters in the input buffer
 
     } while (index < 0 || index >= static_cast<int>(hello.size())); // handle case where user entered an out of range integer
 
@@ -209,7 +256,7 @@ void handling_errors_cerr_and_exit()
     //std::cin >> index;
     //std::cout << "Letter #" << index << " is " << hello[index] << '\n';
 
-    helloworld();
+    helloworlderr();
 
     //Note that this last example has two-levels of error checking: 
     //first, we need to make sure the user’s input was properly read 
@@ -257,7 +304,44 @@ void handling_errors_cerr_and_exit()
     //then array might return -1 normally.
     //This precludes using that value to indicate an error.
 
+    //3) If we want to terminate the program immediately, the exit function that lives in 
+    //<cstdlib> can be used to return an error code to the operating system:
 
+    //#include <cstdlib> // for std::exit()
+    //#include <array>
+
+    //int getArrayValue(const std::array<int, 10>& array, int index)
+    //{
+        // use if statement to detect violated assumption
+    //    if (index < 0 || index >= static_cast<int>(array.size()))
+    //        std::exit(2); // terminate program and return error number 2 to OS
+
+    //    return array[index];
+    //}
+
+    //If the caller passes in an invalid index, this program will terminate immediately 
+    //(with no error message) and pass error code 2 to the operating system.
+
+    //4) If the user has entered invalid input, ask the user to enter the input again.
+
+    helloword1err();
+
+    //5) cerr is another mechanism that is meant specifically for printing error messages.
+    //cerr is an output stream (just like cout) that is defined in <iostream>. 
+    //Typically, cerr writes the error messages on the screen (just like cout),
+    //but it can also be individually redirected to a file.
+
+    printStringerr("Hay");
+
+    //In the above example, we not only skip the bad line, 
+    //we also log an error so the user can later determine why the 
+    //program didn’t execute as expected.
+
+    //6) If working in some kind of graphical environment 
+    //(eg. MFC, SDL, QT, etc…),
+    //it is common to pop up a message box with an error code and then
+    //terminate the program. 
+    //The specific details of how to do this depend on the environment.
 }
 
 

@@ -27,6 +27,9 @@
     <ClCompile Include="Lpp71.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Lpp72.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
