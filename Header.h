@@ -131,6 +131,10 @@ int individual_digit_in_the_integer(int num);
 int factorial001(int num);
 void recursion_quiz();
 
+void printStringerr(const char* cstring);
+int getArrayValueerr(const std::array<int, 10>& array, int index);
+void helloworlderr();
+void helloword1err();
 void handling_errors_cerr_and_exit();
 
 
