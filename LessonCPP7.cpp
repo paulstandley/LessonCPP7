@@ -19,116 +19,58 @@
 #include "Header.h"
 
 
-double calculateTimeUntilObjectHitsGround(double initialHeight, double gravity)
+void command_line_arguments()
 {
-    assert(gravity > 0.0); 
-    // The object won't reach the ground unless there is positive gravity.
-    if (initialHeight <= 0.0)
-    {
-        // The object is already on the ground. Or buried.
-        return 0.0;
-    }
-    return std::sqrt((2.0 * initialHeight) / gravity);
-}
+    //Command line arguments are optional string arguments that are passed
+    //by the operating system to the program when it is launched.
+    //The program can then use them as input (or ignore them).
+    //Much like function parameters provide a way for a function
+    //to provide inputs to another function,
+    //command line arguments provide a way for people or programs
+    //to provide inputs to a program.
 
-void assert_and_static_assert()
-{
-    //Using a conditional statement to detect a violated assumption,
-    //along with printing an error message and terminating the program,
-    //is such a common response to problems that C++ provides a shortcut 
-    //method for doing this. This shortcut is called an assert.
+    //Passing command line arguments
 
-    //An assert statement is a preprocessor macro that evaluates
-    //a conditional expression at runtime. 
-    //If the conditional expression is true,
-    //the assert statement does nothing.
-    //If the conditional expression evaluates to false,
-    //an error message is displayed and the program is terminated.
-    //This error message contains the conditional expression that failed, 
-    //along with the name of the code file and the line number of the assert.
-    //This makes it very easy to tell not only what the problem was,
-    //but where in the code the problem occurred.
-    //This can help with debugging efforts immensely.
+    //Executable programs can be run on the command line by invoking them by name.
+    //For example, to run the executable file “WordCount” that is located
+    //in the root directory of the C : drive on a Windows machine, you could type :
 
-    std::cout << "Took " 
-        << calculateTimeUntilObjectHitsGround(100.0, -9.8) << " second(s)\n";
+    //C:\ > WordCount
 
-    //When the program calls calculateTimeUntilObjectHitsGround(100.0, -9.8),
-    //the program prints a message similar to this:
-    //dropsimulator: src / main.cpp : 6 : double calculateTimeUntilObjectHitsGround(double, 
-    //double) : Assertion `gravity > 0.0' failed.
+    //In order to pass command line arguments to WordCount, 
+    //we simply list the command line arguments after the executable name:
 
-    //We encourage you to use assert statements liberally throughout your code.
-    //Making your assert statements more descriptive
+    //C:\ > WordCount Myfile.txt
 
-    //assert(found && "Car could not be found in database");
-    //Here’s why this works: A C-style string always evaluates to boolean true.
-    //So if found is false, false && true = false. If found is true, 
-    //true && true = true. 
-    //Thus, logical AND-ing a string doesn’t impact the evaluation of the assert.
-    //However, when the assert triggers, 
-    //the string will be included in the assert message:
+    //Now when WordCount is executed, 
+    //Myfile.txt will be provided as a command line argument.
+    //A program can have multiple command line arguments, separated by spaces :
 
-    //NDEBUG and other considerations
+    //C:\ > WordCount Myfile.txt Myotherfile.txt
 
-    //The assert() function comes with a small performance cost that is incurred
-    //each time the assert condition is checked. 
-    //Furthermore, asserts should (ideally) never be encountered in production code 
-    //(because your code should already be thoroughly tested). 
-    //Consequently, many developers prefer that asserts are only active in debug builds.
-    //C++ comes with a way to turn off asserts in production code: #define NDEBUG.
+    //This also works for other command line operating systems,
+    //such as Linux(although your prompt and directory structure will undoubtedly vary).
 
-    //#define NDEBUG
-    // all assert() calls will now be ignored to the end of the file
+    //If you are running your program from an IDE, 
+    //the IDE should provide a way to enter command line arguments.
 
-    //Some IDEs set NDEBUG by default as part of the project settings
-    //for release configurations. 
-    //For example, in Visual Studio, 
-    //the following preprocessor definitions are set at the project level: 
-    //WIN32;NDEBUG;_CONSOLE. 
-    //If you’re using Visual Studio and want your asserts to trigger in release builds,
-    //you’ll need to remove NDEBUG from this setting.
+    //In Microsoft Visual Studio, 
+    //right click on your project in the solution explorer, then choose properties.
+    //Open the “Configuration Properties” tree element,
+    //and choose “Debugging”.
+    //In the right pane, there is a line called “Command Arguments”.
+    //You can enter your command line arguments there for testing, 
+    //and they will be automatically passed to your program when you run it.
 
-    //Do note that the exit() functionand assert() function(if it triggers)
-    //terminate the program immediately,
-    //without a chance to do any further cleanup(e.g.close a file or database).
-    //Because of this, they should be used judiciously
-    //(only in cases where corruption isn’t likely to occur if the program terminates
-    //unexpectedly).
+    //In Code::Blocks, choose “Project->Set program’s arguments”.
 
-    //There’s another type of assert called static_assert. static_assert takes the form
-
-    //static_assert(sizeof(long) == 8, "long must be 8 bytes");
-    //static_assert(sizeof(int) == 4, "int must be 4 bytes");
-
-    //A few notes. Because static_assert is evaluated by the compiler, 
-    //the conditional part of a static_assert must be able to be evaluated
-    //at compile time. Because static_assert is not evaluated at runtime, 
-    //static_assert statements can also be placed anywhere in the code file 
-    //(even in global space).
-
-    //In C++11, a diagnostic message must be supplied as the second parameter.
-    //Since C++17, providing a diagnostic message is optional.
-
-    //Exceptions
-
-    //C++ provides one more method for detectingand handling errors known as exception
-    //handling.The basic idea is that when an error occurs,
-    //the error is “thrown”.
-    //If the current function does not “catch” the error, 
-    //the caller of the function has a chance to catch the error.
-    //If the caller does not catch the error,
-    //the caller’s caller has a chance to catch the error.
-    //The error progressively moves up the stack until it is either caughtand handled,
-    //or until main() fails to handle the error.
-    //If nobody handles the error, the program typically terminates
-    //with an exception error.
+    //Using command line arguments
 }
 
 
 int main()
 {
-    assert_and_static_assert();
+    
     
 
     return 0;

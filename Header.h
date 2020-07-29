@@ -137,6 +137,10 @@ void helloworlderr();
 void helloword1err();
 void handling_errors_cerr_and_exit();
 
+double calculateTimeUntilObjectHitsGround(double initialHeight, double gravity);
+void assert_and_static_assert();
+
+
 
 #endif // !LESSON_7
 
