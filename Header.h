@@ -140,6 +140,9 @@ void handling_errors_cerr_and_exit();
 double calculateTimeUntilObjectHitsGround(double initialHeight, double gravity);
 void assert_and_static_assert();
 
+void command_line_arguments();
+
+double findAverage(int count, ...);
 
 
 #endif // !LESSON_7
