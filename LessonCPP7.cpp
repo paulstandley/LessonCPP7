@@ -250,7 +250,120 @@ void lambdas_anonymous_functions()
     (e.g. we can ask the string view for its length, even if the user 
     passed in a C-style array).
     
+    Generic lambdas and static variables
+
+    One thing to be aware of is that a unique lambda will be generated for each
+    different type that auto resolves to.
+    The following example shows how one generic lambda turns into two distinct lambdas
+
     */
+
+    // Print a value and count how many times @print has been called.
+    auto printlam{
+      [](auto value) {
+        static int callCount{ 0 };
+        std::cout << callCount++ << ": " << value << '\n';
+      }
+    };
+
+    printlam("hello"); // 0: hello
+    printlam("world"); // 1: world
+
+    printlam(1); // 0: 1
+    printlam(2); // 1: 2
+
+    printlam("ding dong"); // 2: ding dong
+
+    /*In the above example, we define a lambda and then call it with two 
+    different parameters (a string literal parameter,
+    and an integer parameter). 
+    This generates two different versions of the lambda
+    (one with a string literal parameter, and one with an integer parameter).
+
+    Most of the time, this is inconsequential.
+    However, note that if the generic lambda uses static duration variables, 
+    those variables are not shared between the generated lambdas.
+
+    We can see this in the example above,
+    where each type (string literals and integers) has its own unique count!
+    Although we only wrote the lambda once, 
+    two lambdas were generated -- and each has its own version of callCount. 
+    To have a shared counter between the two generated lambdas, 
+    we’d have to define a variable outside of the lambda. 
+    For now, this means defining the variable even outside of the 
+    function the lambda is defined in. 
+    In the above example, this means adding a global variable.
+    We’ll be able to avoid the global variable after talking about 
+    lambda captures in the next lesson.
+
+    Return type deduction and trailing return types
+
+    If return type deduction is used,
+    a lambda’s return type is deduced from the return-statements inside the lambda. 
+    If return type inference is used,
+    all return statements in the lambda must return the same type
+    (otherwise the compiler won’t know which one to prefer).
+
+    In the case where we’re returning different types, we have two options:
+
+    1) Do explicit casts to make all the return types match, or
+
+    2) explicitly specify a return type for the lambda, 
+    and let the compiler do implicit conversions
+    
+    */
+
+    // note: explicitly specifying this returns a double
+    auto dividelam{ [](int x, int y, bool bInteger) -> double {
+      if (bInteger)
+        return x / y; // will do an implicit conversion to double
+      else
+        return static_cast<double>(x) / y;
+    } };
+
+    std::cout << dividelam(3, 2, true) << '\n';
+    std::cout << dividelam(3, 2, false) << '\n';
+
+    /*That way, if you ever decide to change the return type,
+    you (usually) only need to change the lambda’s return type,
+    and not touch the lambda body.
+
+    Standard library function objects
+
+    For common operations (e.g. addition, negation, or comparison)
+    you don’t need to write your own lambdas,
+    because the standard library comes with many basic callable objects
+    that can be used instead.
+    These are defined in the <functional> header.
+    
+    */
+
+    std::array arrlam{ 13, 90, 99, 5, 40, 80 };
+    // Pass std::greater to std::sort
+    std::sort(arrlam.begin(), arrlam.end(), std::greater{});
+    // note: need curly braces to instantiate object
+    for (int i : arrlam)
+    {
+        std::cout << i << ' ';
+    }
+    std::cout << '\n';
+
+    /*Conclusion
+
+    Lambdas and the algorithm library may seem unnecessarily complicated when compared
+    to a solution that uses a loop. However, 
+    this combination can allow some very powerful operations in just a few lines
+    of code, and can be more readable than writing your own loops.
+    On top of that, the algorithm library features powerful 
+    and easy-to-use parallelism, which you won’t get with loops. 
+    Upgrading source code that uses library functions is easier than upgrading 
+    code that uses loops.
+
+    Lambdas are great, but they don’t replace regular functions for all cases.
+    Prefer regular functions for non-trivial and reusable cases.
+    
+    */
+
 }
 
 
