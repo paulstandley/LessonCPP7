@@ -147,6 +147,25 @@ double findAverage1(int first, ...);
 double findAverage(int count, ...);
 void ellipsis_and_why_to_avoid_them();
 
+static bool containsNutL(std::string_view str);
+void repeat(int repetitions, const std::function<void(int)>& fn);
+void lambdas_anonymous_functions();
+
+struct Studentlam
+{
+    std::string name{};
+    int points{};
+};
+
+struct Seasonlam
+{
+    std::string_view name{};
+    double averageTemperature{};
+};
+
+void lambdas_quiz();
+void lambdas_quiz1();
+
 
 #endif // !LESSON_7
 
