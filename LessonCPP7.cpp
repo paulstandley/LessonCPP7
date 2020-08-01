@@ -17,357 +17,246 @@
 #include <cassert> // for assert()
 #include <cmath> // for std::sqrt
 #include <cstdarg> // needed to use ellipsis
+#include <string_view>
 #include "Header.h"
 
 
-// The ellipsis must be the last parameter
-double findAverage2(std::string decoder, ...)
+static bool containsNutL(std::string_view str) // static means internal linkage in this context
 {
-    double sum = 0;
+    // std::string_view::find returns std::string_view::npos if it doesn't find
+    // the substring. Otherwise it returns the index where the substring occurs
+    // in str.
+    return (str.find("nut") != std::string_view::npos);
+}
 
-    // We access the ellipsis through a va_list, so let's declare one
-    va_list list;
-
-    // We initialize the va_list using va_start.  The first parameter is
-    // the list to initialize.  The second parameter is the last non-ellipsis
-    // parameter.
-    va_start(list, decoder);
-
-    int count = 0;
-    // Loop indefinitely
-    while (true)
+void repeat(int repetitions, const std::function<void(int)>& fn)
+{// We don't know what fn will be. 
+    //std::function works with regular functions and lambdas.
+    for (int i{ 0 }; i < repetitions; ++i)
     {
-        char codetype = decoder[count];
-        switch (codetype)
-        {
-        default:
-        case '\0':
-            // Cleanup the va_list when we're done.
-            va_end(list);
-            return sum / count;
+        fn(i);
+    }
+}
 
-        case 'i':
-            sum += va_arg(list, int);
-            count++;
-            break;
+void lambdas_anonymous_functions()
+{
+    /*Lambdas
 
-        case 'd':
-            sum += va_arg(list, double);
-            count++;
-            break;
+    A lambda expression (also called a lambda or closure)
+    allows us to define an anonymous function inside another function.
+    The nesting is important, as it allows us both to avoid namespace naming pollution,
+    and to define the function as close to where it is used as possible 
+    (providing additional context).
+
+    The syntax for lambdas is one of the weirder things in C++, 
+    and takes a bit of getting used to. Lambdas take the form:
+
+    [ captureClause ] ( parameters ) -> returnType
+    {
+        statements;
+    }
+    
+    The capture clause and parameters can both be empty if they are not needed.
+
+    The return type is optional, and if omitted, auto will be assumed
+    (thus using type inference used to determine the return type).
+    While we previously noted that type inference for function return 
+    types should be avoided, in this context, it’s fine to use
+    (because these functions are typically so trivial).
+
+      []() {}; // defines a lambda with no captures, no parameters, and no return type
+    
+    */
+
+    std::array<std::string_view, 4> arr{ "apple", "banana", "walnut", "lemon" };
+
+    // Define the function right where we use it.
+    auto found{ std::find_if(arr.begin(), arr.end(),
+                             [](std::string_view str)
+        // here's our lambda, no capture clause
+                             {
+                               return (str.find("nut") != std::string_view::npos);
+                             }) };
+
+    if (found == arr.end())
+    {
+        std::cout << "No nuts\n";
+    }
+    else
+    {
+        std::cout << "Found " << *found << '\n';
+    }
+
+    /*Note how similar our lambda is to our containsNut function. 
+    They both have identical parameters and function bodies. 
+    The lambda has no capture clause 
+    (we’ll explain what a capture clause is in the next lesson)
+    because it doesn’t need one. 
+    And we’ve omitted the trailing return type in the lambda (for conciseness), 
+    but since operator!= returns a bool, our lambda will return a bool too.
+    
+    Type of a lambda
+
+    In the above example, we defined a lambda right where it was needed. 
+    This use of a lambda is sometimes called a function literal.
+
+    However, writing a lambda in the same line as it’s used can sometimes
+    make code harder to read.
+    Much like we can initialize a variable with a literal value
+    (or a function pointer) for use later,
+    we can also initialize a lambda variable with a lambda definition 
+    and then use it later. 
+    A named lambda along with a good function name can make code easier to read.
+    
+    As it turns out, lambdas don’t have a type that we can explicitly use. 
+    When we write a lambda, the compiler generates a unique type just for the lambda
+    that is not exposed to us.
+
+    In actuality, lambdas aren’t functions 
+    (which is part of how they avoid the limitation of C++ not supporting nested
+    functions). They’re a special kind of object called a functor.
+    Functors are objects that contain an overloaded operator()
+    that make them callable like a function
+
+    Although we don’t know the type of a lambda,
+    there are several ways of storing a lambda for use post-definition.
+    If the lambda has an empty capture clause,
+    we can use a regular function pointer.
+    In the next lesson, we introduce lambda captures,
+    a function pointer won’t work anymore at that point.
+    However, std::function can be used for lambdas even if they are 
+    capturing something.
+
+    */
+
+    // A regular function pointer. Only works with an empty capture clause.
+    double (*addNumbers1)(double, double) {
+        [](double a, double b) {
+            return (a + b);
         }
-    }
-}
+    };
 
-// The ellipsis must be the last parameter
-double findAverage1(int first, ...)
-{
-    // We have to deal with the first number specially
-    double sum = first;
+    std::cout << addNumbers1(1, 2) << '\n';
 
-    // We access the ellipsis through a va_list, so let's declare one
-    va_list list;
+    // Using std::function. The lambda could have a non-empty capture clause (Next lesson).
+    std::function addNumbers2{ // note: pre-C++17, use std::function<double(double, double)> instead
+      [](double a, double b) {
+        return (a + b);
+      }
+    };
 
-    // We initialize the va_list using va_start.  The first parameter is
-    // the list to initialize.  The second parameter is the last non-ellipsis
-    // parameter.
-    va_start(list, first);
+    std::cout << addNumbers2(3, 4) << '\n';
 
-    int count = 1;
-    // Loop indefinitely
-    while (true)
+    // Using auto. Stores the lambda with its real type.
+    auto addNumbers3{
+      [](double a, double b) {
+        return (a + b);
+      }
+    };
+
+    std::cout << addNumbers3(5, 6) << '\n';
+
+    /*The only way of using the lambda’s actual type is by means of auto.
+    auto also has the benefit of having no overhead compared to std::function.
+
+    Unfortunately, we can’t always use auto.
+    In cases where the actual lambda is unknown 
+    (e.g. because we’re passing a lambda to a function as a parameter and the 
+    caller determines what lambda will be passed in),
+    we can’t use auto. In such cases, std::function should be used.
+    
+    */
+
+    repeat(3, [](int i) {
+        std::cout << i << '\n';
+        });
+
+    /*Rule
+
+    Use auto when initializing variables with lambdas, 
+    and std::function if you can’t initialize the variable with the lambda.
+
+    Generic lambdas
+
+    For the most part, lambda parameters work by the same rules as regular function parameters.
+
+    One notable exception is that since C++14 we’re allowed to use auto for parameters 
+    (note: in C++20, regular functions will be able to use auto for parameters too).
+    When a lambda has one or more auto parameter, 
+    the compiler will infer what parameter types are needed from the calls 
+    to the lambda.
+
+    Because lambdas with one or more auto parameter can potentially work with a wide variety of types, they are called generic lambdas.
+
+    For advanced readers
+
+    When used in the context of a lambda,
+    auto is just a shorthand for a template parameter.
+    
+    */
+
+    std::array months{ // pre-C++17 use std::array<const char*, 12>
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    };
+
+    // Search for two consecutive months that start with the same letter.
+    auto sameLetter{ std::adjacent_find(months.begin(), months.end(),
+                                        [](const auto& a, const auto& b) {
+                                          return (a[0] == b[0]);
+                                        }) };
+
+    // Make sure that two months were found.
+    if (sameLetter != months.end())
     {
-        // We use va_arg to get parameters out of our ellipsis
-        // The first parameter is the va_list we're using
-        // The second parameter is the type of the parameter
-        int arg = va_arg(list, int);
-
-        // If this parameter is our sentinel value, stop looping
-        if (arg == -1)
-            break;
-
-        sum += arg;
-        count++;
+        // std::next returns the next iterator after sameLetter
+        std::cout << *sameLetter << " and " << *std::next(sameLetter)
+            << " start with the same letter\n";
     }
 
-    // Cleanup the va_list when we're done.
-    va_end(list);
-
-    return sum / count;
-}
-
-double findAverage(int count, ...)
-{// The ellipsis must be the last parameter
-// count is how many additional arguments we're passing
-    double sum = 0;
-
-    // We access the ellipsis through a va_list, so let's declare one
-    va_list list;
-
-    // We initialize the va_list using va_start.  The first parameter is
-    // the list to initialize.  The second parameter is the last non-ellipsis
-    // parameter.
-    va_start(list, count);
-
-    // Loop through all the ellipsis arguments
-    for (int arg = 0; arg < count; ++arg)
-        // We use va_arg to get parameters out of our ellipsis
-        // The first parameter is the va_list we're using
-        // The second parameter is the type of the parameter
-        sum += va_arg(list, int);
-
-    // Cleanup the va_list when we're done.
-    va_end(list);
-
-    return sum / count;
-}
-
-
-void ellipsis_and_why_to_avoid_them()
-{
-    /*In all of the functions we’ve seen so far, 
-    the number of parameters a function will take must be known in advance 
-    (even if they have default values). 
-    However, there are certain cases where it can be useful to be able to pass
-    a variable number of parameters to a function.
-
-    C++ provides a special specifier known as ellipsis (aka “…”) 
-    that allow us to do precisely this.
-    
-    Functions that use ellipsis take the form:
-
-    return_type function_name(argument_list, ...)
-    
-    The argument_list is one or more normal function parameters. 
-    Note that functions that use ellipsis must have at least one non-ellipsis parameter.
-    Any arguments passed to the function must match the argument_list parameters first.
-
-    The ellipsis (which are represented as three periods in a row)
-    must always be the last parameter in the function. 
-    The ellipsis capture any additional arguments (if there are any). 
-    Though it is not quite accurate,
-    it is conceptually useful to think of the ellipsis as an array
-    that holds any additional parameters beyond those in the argument_list.
+    /*In the above example, 
+    we use auto parameters to capture our strings by const reference.
+    Because all string types allow access to their individual characters via operator[],
+    we don’t need to care whether the user is passing in a std::string, 
+    C-style string, or something else.
+    This allows us to write a lambda that could accept any of these, 
+    meaning if we change the type of months later,
+    we won’t have to rewrite the lambda.
     
     */
 
-    std::cout << findAverage(5, 1, 2, 3, 4, 5) << '\n';
-    std::cout << findAverage(6, 1, 2, 3, 4, 5, 6) << '\n';
+    // Count how many months consist of 5 letters
+    auto fiveLetterMonths{ std::count_if(months.begin(), months.end(),
+                                         [](std::string_view str) {
+                                           return (str.length() == 5);
+                                         }) };
 
-    /*As you can see, this function takes a variable number of parameters! 
-    Now, let’s take a look at the components that make up this example.
+    std::cout << "There are " << fiveLetterMonths << " months with 5 letters\n";
 
-    First, we have to include the cstdarg header. 
-    This header defines va_list, va_arg, va_start, and va_end, 
-    which are macros that we need to use to access the parameters that are 
-    part of the ellipsis.
+    /*In this example, using auto would infer a type of const char*.
+    C-style strings aren’t easy to work with (apart from using operator[]).
+    In this case, we prefer to explicitly define the parameter as a std::string_view, 
+    which allows us to work with the underlying data much more easily
+    (e.g. we can ask the string view for its length, even if the user 
+    passed in a C-style array).
     
-    We then declare our function that uses the ellipsis.
-    Remember that the argument list must be one or more fixed parameters. 
-    In this case, we’re passing in a single integer that tells us how many 
-    numbers to average. The ellipsis always comes last.
-
-    Note that the ellipsis parameter has no name! Instead, 
-    we access the values in the ellipsis through a special type known as va_list.
-    It is conceptually useful to think of va_list as a pointer that points
-    to the ellipsis array. 
-    First, we declare a va_list, which we’ve called “list” for simplicity.
-
-    The next thing we need to do is make list point to our ellipsis parameters. 
-    We do this by calling va_start(). va_start() takes two parameters: 
-    the va_list itself, and the name of the last non-ellipsis parameter 
-    in the function. Once va_start() has been called, va_list points to
-    the first parameter in the ellipsis.
-
-    To get the value of the parameter that va_list currently points to,
-    we use va_arg(). va_arg() also takes two parameters: 
-    the va_list itself, and the type of the parameter we’re trying to access. 
-    Note that va_arg() also moves the va_list to the next parameter in the ellipsis!
-
-    Finally, to clean up when we are done, we call va_end(), 
-    with va_list as the parameter.
-    
-    Note that va_start() can be called again any time we want to reset 
-    the va_list to point to the first parameter in the ellipses again.
-
-    */
-
-    std::cout << findAverage(6, 1.0, 2, 3, 4, 5, 6) << '\n';
-
-    /*As you have learned in previous lessons,
-    a computer stores all data as a sequence of bits.
-    A variable’s type tells the computer how to translate that sequence 
-    of bits into a meaningful value.
-    However, you just learned that the ellipsis throw away the variable’s type!
-    Consequently, the only way to get a meaningful value back from the ellipsis
-    is to manually tell va_arg() what the expected type of the next parameter is.
-    This is what the second parameter of va_arg() does.
-    If the actual parameter type doesn’t match the expected parameter type, 
-    bad things will usually happen.
-
-    In the above findAverage program, we told va_arg() 
-    that our variables are all expected to have a type of int. 
-    Consequently, each call to va_arg() will return the next sequence
-    of bits translated as an integer.
-    
-    In this case, the problem is that the double we passed in as the first 
-    ellipsis argument is 8 bytes, 
-    whereas va_arg(list, int) will only return 4 bytes of data with each call.
-    Consequently, the first call to va_arg will only read the first 4 bytes 
-    of the double (producing a garbage result),
-    and the second call to va_arg will read the second 4 bytes of the double
-    (producing another garbage result). 
-    Thus, our overall result is garbage.
-
-    Because type checking is suspended, 
-    the compiler won’t even complain if we do something completely ridiculous,
-    like this:
-
-    */
-
-    int value = 7;
-    std::cout << findAverage(6, 1.0, 2, "Hello, world!", 'G', &value, &findAverage) << '\n';
-
-    /*Believe it or not, this actually compiles just fine
-
-    This result epitomizes the phrase, “Garbage in, garbage out”, 
-    which is a popular computer science phrase 
-    “used primarily to call attention to the fact that computers, unlike humans,
-    will unquestioningly process the most nonsensical of input data 
-    and produce nonsensical output” (Wikipedia).
-
-    So, in summary, type checking on the parameters is suspended,
-    and we have to trust the caller to pass in the right type of parameters. 
-    If they don’t, the compiler won’t complain -- 
-    our program will just produce garbage (or maybe crash).
-    
-    Why ellipsis are dangerous: ellipsis don’t know how many parameters were passed
-
-    Not only do the ellipsis throw away the type of the parameters, 
-    it also throws away the number of parameters in the ellipsis.
-    This means we have to devise our own solution for keeping track
-    of the number of parameters passed into the ellipsis.
-    Typically, this is done in one of three ways.
-
-    Method 1: Pass a length parameter
-
-    Method #1 is to have one of the fixed parameters represent the number of optional
-    parameters passed. 
-    This is the solution we use in the findAverage() example above.
-
-    However, even here we run into trouble. For example, consider the following call:
-
-    */
-
-    std::cout << findAverage(6, 1, 2, 3, 4, 5) << '\n';
-
-    /*What happened? We told findAverage() we were going to give it 6 values,
-    but we only gave it 5. 
-    Consequently, the first five values that va_arg() 
-    returns were the ones we passed in. 
-    The 6th value it returns was a garbage value somewhere in the stack.
-    Consequently, we got a garbage answer. 
-    At least in this case it was fairly obvious that this is a garbage value.
-    
-    A more insidious case:
-    */
-
-    std::cout << findAverage(6, 1, 2, 3, 4, 5, 6, 7) << '\n';
-
-    /*This produces the answer 3.5, which may look correct at first glance,
-    but omits the last number in the average, 
-    because we only told it we were going to provide 6 parameters 
-    (and then provided 7). These kind of mistakes can be very hard to catch.
-
-    Method 2: Use a sentinel value
-
-    Method #2 is to use a sentinel value. 
-    A sentinel is a special value that is used to terminate a loop when it is encountered.
-    For example, with strings, the null terminator is used as a sentinel
-    value to denote the end of the string.
-    With ellipsis, the sentinel is typically passed in as the last parameter. 
-    Here’s an example of findAverage() rewritten to use a sentinel value of -1:
-    
-    */
-
-    std::cout << findAverage1(1, 2, 3, 4, 5, -1) << '\n';
-    std::cout << findAverage1(1, 2, 3, 4, 5, 6, -1) << '\n';
-
-    /*Note that we no longer need to pass an explicit length as the first parameter.
-    Instead, we pass a sentinel value as the last parameter.
-
-    However, there are a couple of challenges here.
-    First, C++ requires that we pass at least one fixed parameter. 
-    In the previous example, this was our count variable.
-
-    In this example, the first value is actually part of the numbers to be averaged.
-    So instead of treating the first value to be averaged as part of the ellipsis
-    parameters, we explicitly declare it as a normal parameter.
-
-    We then need special handling for it inside the function
-    (in this case, we set sum to first instead of 0 to start).
-    
-    Second, this requires the user to pass in the sentinel as the last value. 
-    If the user forgets to pass in the sentinel value (or passes in the wrong value),
-    the function will loop continuously until it runs into garbage that matches 
-    the sentinel (or crashes).
-
-    Finally, note that we’ve chosen -1 as our sentinel.
-    That’s fine if we only wanted to find the average of positive numbers, 
-    but what if we wanted to include negative numbers?
-    Sentinel values only work well if there is a value that falls outside
-    the valid set of values for the problem you are trying to solve.
-
-    Method 3: Use a decoder string
-
-    Method #3 involves passing a “decoder string”
-    that tells the program how to interpret the parameters.
-
-    */
-
-    std::cout << findAverage2("iiiii", 1, 2, 3, 4, 5) << '\n';
-    std::cout << findAverage2("iiiiii", 1, 2, 3, 4, 5, 6) << '\n';
-    std::cout << findAverage2("iiddi", 1, 2, 3.5, 4.5, 5) << '\n';
-
-    /*In this example, 
-    we pass a string that encodes both the number of optional variables and their types.
-    The cool thing is that this lets us deal with parameters of different types.
-    However, this method has downsides as well:
-    the decoder string can be a bit cryptic,
-    and if the number or types of the optional parameters don’t match the 
-    decoder string precisely, bad things can happen.
-
-    For those of you coming from C, this is what printf does!
-    
-    Recommendations for safer use of ellipsis
-
-    First, if possible, do not use ellipsis at all! Oftentimes, 
-    other reasonable solutions are available, 
-    even if they require slightly more work. 
-    For example, in our findAverage() program, we could have passed in a 
-    dynamically sized array of integers instead.
-    This would have provided both strong type checking
-    (to make sure the caller doesn’t try to do something nonsensical) 
-    while preserving the ability to pass a variable number of integers to be averaged.
-
-    Second, if you do use ellipsis, do not mix expected argument types within your 
-    ellipsis if possible. 
-    Doing so vastly increases the possibility of the caller inadvertently
-    passing in data of the wrong type and va_arg() producing a garbage result.
-
-    Third, using a count parameter or decoder string as part of the argument list
-    is generally safer than using a sentinel as an ellipsis parameter. 
-    This forces the user to pick an appropriate value for the count/decoder parameter,
-    which ensures the ellipsis loop will terminate after a reasonable number of 
-    iterations even if it produces a garbage value.
-
     */
 }
 
 
 int main()
 {
-    void ellipsis_and_why_to_avoid_them();
+    lambdas_anonymous_functions();
     
 
     return 0;

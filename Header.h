@@ -142,7 +142,10 @@ void assert_and_static_assert();
 
 void command_line_arguments();
 
+double findAverage2(std::string decoder, ...);
+double findAverage1(int first, ...);
 double findAverage(int count, ...);
+void ellipsis_and_why_to_avoid_them();
 
 
 #endif // !LESSON_7
