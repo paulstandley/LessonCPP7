@@ -166,6 +166,20 @@ struct Seasonlam
 void lambdas_quiz();
 void lambdas_quiz1();
 
+struct Carlam
+{
+    std::string make{};
+    std::string model{};
+};
+
+// returns a lambda
+auto makeWalrus(const std::string& name);
+void invoke(const std::function<void(void)>& fn);
+void lambda_captures();
+
+int getValuelamb();
+void lambdas_captures_quiz();
+
 
 #endif // !LESSON_7
 

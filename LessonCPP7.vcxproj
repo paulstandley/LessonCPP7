@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Lesson7Quiz.cpp" />
     <ClCompile Include="LessonCPP7.cpp" />
     <ClCompile Include="LPP7.cpp" />
     <ClCompile Include="Lpp71.cpp" />
