@@ -180,6 +180,12 @@ void lambda_captures();
 int getValuelamb();
 void lambdas_captures_quiz();
 
+int get_number_from_user();
+int random_number_in_range(int min = 1, int max = 10);
+bool start_square_numbers();
+void square_numbers();
+void lambda_7_3();
+
 
 #endif // !LESSON_7
 
