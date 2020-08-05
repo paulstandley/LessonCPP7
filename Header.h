@@ -177,15 +177,35 @@ auto makeWalrus(const std::string& name);
 void invoke(const std::function<void(void)>& fn);
 void lambda_captures();
 
-int getValuelamb();
-void lambdas_captures_quiz();
+//int getValuelamb();
+//void lambdas_captures_quiz();
 
-int get_number_from_user();
-int random_number_in_range(int min = 1, int max = 10);
-bool start_square_numbers();
-void square_numbers();
-void lambda_7_3();
+//int get_number_from_user();
+//int random_number_in_range(int min = 1, int max = 10);
+//bool start_square_numbers();
+//void square_numbers();
+//void lambda_7_3();
 
+using list_type = std::vector<int>;
+
+namespace config
+{
+    constexpr int multiplierMin{ 2 };
+    constexpr int multiplierMax{ 4 };
+    constexpr int maximumWrongAnswer{ 4 };
+}
+
+int getRandomInt(int min, int max);
+list_type generateNumbers(int start, int count, int multiplier);
+list_type generateUserNumbers(int multiplier);
+int getUserGuess();
+bool findAndRemove(list_type& numbers, int guess);
+int findClosestNumber(const list_type& numbers, int guess);
+void printTask(list_type::size_type count, int multiplier);
+void printSuccess(list_type::size_type numbersLeft);
+void printFailure(const list_type& numbers, int guess);
+bool playRound(list_type& numbers);
+void runGameLoop();
 
 #endif // !LESSON_7
 
