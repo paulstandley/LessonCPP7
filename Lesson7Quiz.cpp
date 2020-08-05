@@ -72,6 +72,7 @@ void lambdas_captures_quiz()
 }
 */
     
+/*
 //std::mt19937 mt{ static_cast<std::mt19937::result_type>(std::time(nullptr)) };
 
 int get_number_from_user()
@@ -96,6 +97,7 @@ int get_number_from_user()
     }
 }
 
+
 int random_number_in_range(int min = 1, int max = 10)
 {
     //Generate a random integer from min to max
@@ -106,8 +108,9 @@ int random_number_in_range(int min = 1, int max = 10)
     std::uniform_int_distribution<int> uni(min, max);
     // guaranteed unbiased
     auto random_integer = uni(rng);
-    return random_integer;
+    return static_cast<int>(random_integer);
 }
+
 
 bool start_square_numbers()
 {
@@ -133,7 +136,7 @@ void square_numbers()
             int start_num{ get_number_from_user() };
             std::cout << start_num << '\n';
 
-            //the second is the amount of numbers to generate. 
+            //the second is the amount of numbers to generate.
             std::cout << "How many?  ";
             int num{ get_number_from_user() };
             std::cout << num << '\n';
@@ -154,26 +157,27 @@ void square_numbers()
 
 void lambda_7_3()
 {
-    /*We’re going to write a little game with square numbers
-    (numbers which can be created by multiplying an integer with itself
-    (1, 4, 9, 16, 25, …)).
+    //We’re going to write a little game with square numbers
+    //(numbers which can be created by multiplying an integer with itself
+    //(1, 4, 9, 16, 25, …)).
 
-    Ask the user to input 2 numbers,
-    the first is the square root of the number to start at,
-    the second is the amount of numbers to generate.
+    //Ask the user to input 2 numbers,
+    //the first is the square root of the number to start at,
+    //the second is the amount of numbers to generate.
 
-    Generate a random integer from 2 to 4,
-    and square numbers in the range that was chosen by the user.
+    //Generate a random integer from 2 to 4,
+    //and square numbers in the range that was chosen by the user.
 
-    Multiply each square number by the random number.
-    You can assume that the user enters valid numbers.
+    //Multiply each square number by the random number.
+    //You can assume that the user enters valid numbers.
 
-    The user has to calculate which numbers have been generated. The program checks if the user guessed correctly and removes the guessed number from the list. If the user guessed wrong, the game is over and the program prints the number that was closest to the user’s final guess, but only if the final guess was not off by more than 4.
+    //The user has to calculate which numbers have been generated. The program checks if the user guessed correctly and removes the guessed number from the list. If the user guessed wrong, the game is over and the program prints the number that was closest to the user’s final guess, but only if the final guess was not off by more than 4.
 
-    */
+    
 
-    square_numbers();
+square_numbers();
 
 }
+*/
 
 
